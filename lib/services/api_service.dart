@@ -1,17 +1,17 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class ApiService {
-  static const String baseUrl = "http://10.0.2.2/api"; 
-  // 10.0.2.2 = localhost dari emulator
+class ApiLoginService {
+  static const String baseUrl = "http://127.0.0.1:8000/api";
 
-  static Future login(String username, String password) async {
+  static Future<Map<String, dynamic>> login(
+    String username,
+    String password,
+  ) async {
     final response = await http.post(
-      Uri.parse("$baseUrl/login.php"),
-      body: {
-        "username": username,
-        "password": password,
-      },
+      Uri.parse("$baseUrl/login"),
+      headers: {"Accept": "application/json"},
+      body: {"username": username, "password": password},
     );
 
     return jsonDecode(response.body);

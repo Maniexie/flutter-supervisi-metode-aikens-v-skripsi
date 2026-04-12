@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/dashboard.dart';
+import 'package:supervisi/services/api_service.dart';
 
 class LoginPage extends StatelessWidget {
   static const routeName = '/login';
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -18,9 +21,10 @@ class LoginPage extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.asset('assets/images/image1.jpg', height: 100),
+                // child: Image.asset('assets/images/image1.jpg', height: 100),
               ),
               TextFormField(
+                controller: usernameController,
                 decoration: InputDecoration(hintText: "Username"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -30,6 +34,7 @@ class LoginPage extends StatelessWidget {
                 },
               ),
               TextFormField(
+                controller: passwordController,
                 decoration: InputDecoration(hintText: "Password"),
                 obscureText: true,
                 validator: (value) {
@@ -41,9 +46,23 @@ class LoginPage extends StatelessWidget {
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    Navigator.pushNamed(context, DashboardPage.routeName);
+                    var result = await ApiLoginService.login(
+                      usernameController.text,
+                      passwordController.text,
+                    );
+
+                    if (result['success'] == true) {
+                      Navigator.pushNamed(context, DashboardPage.routeName);
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Login success')));
+                    } else {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Login failed')));
+                    }
                   }
                 },
                 child: Text("Login"),

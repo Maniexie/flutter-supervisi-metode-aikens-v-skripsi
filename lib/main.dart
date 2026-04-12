@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supervisi/pages/dashboard.dart';
-import 'package:supervisi/pages/login.dart';
+
+import 'package:supervisi/routes/AppPages.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,11 +11,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
-      routes: {
-        LoginPage.routeName: (context) => LoginPage(),
-        DashboardPage.routeName: (context) => DashboardPage(),
-      },
+      routes: AppPages.routes,
+      initialRoute: '/login',
     );
   }
 }
