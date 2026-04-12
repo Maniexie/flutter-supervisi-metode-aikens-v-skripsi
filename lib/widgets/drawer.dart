@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/dashboard.dart';
 
 class DrawerPage extends StatelessWidget {
   @override
@@ -23,6 +24,10 @@ class DrawerPage extends StatelessWidget {
             title: Text('Instrumen'),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DashboardPage()),
+              );
             },
           ),
           ListTile(
