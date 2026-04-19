@@ -84,7 +84,11 @@ class _LoginPageState extends State<LoginPage> {
                               );
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Login success')),
+                                SnackBar(
+                                  content: Text(
+                                    'Login success with username ${usernameController.text}',
+                                  ),
+                                ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         }
                       },
-                      child: Text("Login"),
+                      child: Text("Submit"),
                     ),
             ],
           ),

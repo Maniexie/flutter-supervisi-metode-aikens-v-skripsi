@@ -40,9 +40,19 @@ class _ProfilePageState extends State<ProfilePage> {
           // ================= HEADER PROFILE =================
           Container(
             padding: EdgeInsets.all(20),
+
             child: Column(
               children: [
-                CircleAvatar(radius: 40, child: Icon(Icons.person, size: 40)),
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(80.0),
+                    topRight: Radius.circular(80.0),
+                    bottomLeft: Radius.circular(80.0),
+                    bottomRight: Radius.circular(80.0),
+                  ),
+                  child: Image.asset('assets/images/image1.jpg', height: 100),
+                ),
+                // CircleAvatar(radius: 40, child: Icon(Icons.person, size: 40)),
                 SizedBox(height: 10),
                 Text(
                   nama,

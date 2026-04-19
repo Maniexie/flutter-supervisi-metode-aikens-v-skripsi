@@ -22,11 +22,17 @@ class BottomNavigation extends StatelessWidget {
           label: 'Home',
         ),
         NavigationDestination(
-          icon: Icon(Icons.notifications),
-          label: 'Notifications',
+          icon: Icon(Icons.assignment_add),
+          label: 'Supervisi',
         ),
-        NavigationDestination(icon: Icon(Icons.message), label: 'Messages'),
-        NavigationDestination(icon: Icon(Icons.list), label: 'Item'),
+        NavigationDestination(
+          icon: Icon(Icons.message),
+          label: 'Item Penilaian',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.computer_rounded),
+          label: 'Aiken',
+        ),
         NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
       ],
     );

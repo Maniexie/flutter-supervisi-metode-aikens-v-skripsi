@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/dashboard.dart';
+import 'package:supervisi/services/api_service.dart';
 
 class DrawerPage extends StatelessWidget {
   @override
@@ -38,8 +39,10 @@ class DrawerPage extends StatelessWidget {
           ),
           ListTile(
             title: Text('Logout'),
-            onTap: () {
-              Navigator.pop(context);
+            onTap: () async {
+              await ApiLogoutService().logout();
+              Navigator.pushReplacementNamed(context, '/login');
+              print("logout");
             },
           ),
         ],

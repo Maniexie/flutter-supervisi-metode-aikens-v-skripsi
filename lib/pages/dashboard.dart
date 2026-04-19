@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/aiken/aiken_home.dart';
 import 'package:supervisi/pages/aiken/item_penilaian.dart';
+import 'package:supervisi/pages/home.dart';
 import 'package:supervisi/pages/profile.dart';
+import 'package:supervisi/pages/supervisi/supervisi_home.dart';
 import 'package:supervisi/widgets/bottom_navigation.dart';
 import 'package:supervisi/widgets/drawer.dart';
 
@@ -13,19 +16,13 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int currentPageIndex = 0;
-  final List<String> titles = [
-    "Home",
-    "Notifications567",
-    "Messages",
-    "Item Penilaian",
-    "Profil",
-  ];
+  final List<String> titles = ["", "", "", "", ""];
 
   final List<Widget> pages = [
-    Center(child: Text("Home")),
-    Center(child: Text("Notifications")),
-    Center(child: Text("Messages")),
-    ItemPenilaian(), // <-- INI HALAMAN KAMU
+    HomePage(),
+    SupervisiHomePage(),
+    ItemPenilaian(),
+    AikenHomePage(),
     ProfilePage(),
   ];
 
