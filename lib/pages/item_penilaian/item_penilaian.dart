@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supervisi/pages/aiken/item_penilaian_detail.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/models/KategoriPenilaianModel.dart';
 import 'package:supervisi/services/api_service.dart';

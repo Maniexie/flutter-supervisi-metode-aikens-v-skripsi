@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/aiken/aiken_home.dart';
-import 'package:supervisi/pages/aiken/item_penilaian.dart';
+import 'package:supervisi/pages/item_penilaian/item_penilaian.dart';
 import 'package:supervisi/pages/home.dart';
 import 'package:supervisi/pages/profile.dart';
 import 'package:supervisi/pages/supervisi/supervisi_home.dart';

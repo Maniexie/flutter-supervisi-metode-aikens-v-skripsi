@@ -170,3 +170,47 @@ class ApiItemPenilaianService {
     }
   }
 }
+
+class ApiAikenService {
+  // 🔥 GET LIST VERSI
+  Future<List<int>> getVersiList() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/item-penilaian/get-versi-item'),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+
+      final List data = json['data'];
+
+      return data.map<int>((e) => e['versi'] as int).toList();
+    } else {
+      throw Exception("Gagal load versi");
+    }
+  }
+
+  // 🔥 GET KUESIONER BY VERSI
+  Future<List<dynamic>> getKuesionerByVersi(int versi) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/item-penilaian/group-by-versi'),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+
+      final List data = json['data'];
+
+      // 🔥 FILTER DI FLUTTER
+      final result = data.firstWhere(
+        (e) => e['versi'] == versi,
+        orElse: () => null,
+      );
+
+      if (result == null) return [];
+
+      return result['items'];
+    } else {
+      throw Exception("Gagal load kuesioner");
+    }
+  }
+}

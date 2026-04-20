@@ -4,7 +4,7 @@ import 'AppRoutes.dart';
 
 import 'package:supervisi/pages/dashboard.dart';
 import 'package:supervisi/pages/auth/login.dart';
-import 'package:supervisi/pages/aiken/item_penilaian.dart';
+import 'package:supervisi/pages/item_penilaian/item_penilaian.dart';
 
 class AppPages {
   static Map<String, WidgetBuilder> routes = {
