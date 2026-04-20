@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
+import 'package:supervisi/pages/models/KategoriPenilaianModel.dart';
 
 const String baseUrl = "http://localhost:8000/api";
 
@@ -68,6 +69,24 @@ class ApiGetUserService {
   }
 }
 
+// ================ KATEGORI PENILAIAN ================
+class ApiKategoriPenilaianService {
+  Future<List<KategoriPenilaianModel>> getKategoriPenilaian() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/kategori-penilaian'),
+      headers: {'Accept': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+
+      return data.map((item) => KategoriPenilaianModel.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load kategori');
+    }
+  }
+}
+
 // ================ ITEM PENILAIAN ================
 class ApiItemPenilaianService {
   Future<List<ItemPenilaianModel>> getItemPenilaian() async {
@@ -79,6 +98,33 @@ class ApiItemPenilaianService {
       return data.map((item) => ItemPenilaianModel.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load item penilaian');
+    }
+  }
+
+  // 🔥 TAMBAHAN
+  Future<void> tambahItemPenilaian(
+    String kodeKategori,
+    String pernyataan,
+  ) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/item-penilaian'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'kode_kategori_penilaian': kodeKategori,
+        'pernyataan': pernyataan,
+      }),
+    );
+
+    print(response.statusCode);
+    print(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('Berhasil disimpan');
+    } else {
+      throw Exception('Gagal simpan');
     }
   }
 }

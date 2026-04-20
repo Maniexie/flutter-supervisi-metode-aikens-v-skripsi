@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/aiken/item_penilaian_detail.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
+import 'package:supervisi/pages/models/KategoriPenilaianModel.dart';
 import 'package:supervisi/services/api_service.dart';
 
 class ItemPenilaian extends StatefulWidget {
@@ -22,6 +23,11 @@ String formatStatus(String status) {
 }
 
 class _ItemPenilaianState extends State<ItemPenilaian> {
+  List<ItemPenilaianModel> kategoriList = [];
+  String? selectedKategori;
+  bool isLoadingKategori = true;
+
+  @override
   late Future<List<ItemPenilaianModel>> futureItems;
 
   @override
@@ -37,35 +43,124 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
   }
 
   void tambahItem() {
-    TextEditingController controller = TextEditingController();
+    TextEditingController pernyataanController = TextEditingController();
+
+    String? selectedKategori;
+    bool isLoading = false;
+    bool isLoadingKategori = true;
+    List<KategoriPenilaianModel> kategoriList = [];
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Tambah Item Penilaian"),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: "Masukkan item penilaian",
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Batal"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (controller.text.isNotEmpty) {
-                  // TODO: kirim ke API (kalau sudah dibuat POST)
-                  refreshData();
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text("Simpan"),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            // 🔥 LOAD DATA SAAT DIALOG DIBUKA
+            if (isLoadingKategori) {
+              ApiKategoriPenilaianService().getKategoriPenilaian().then((data) {
+                setStateDialog(() {
+                  kategoriList = data;
+                  isLoadingKategori = false;
+                });
+              });
+            }
+
+            return AlertDialog(
+              title: const Text("Tambah Item Penilaian"),
+
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 🔽 DROPDOWN
+                  isLoadingKategori
+                      ? const CircularProgressIndicator()
+                      : DropdownButtonFormField<String>(
+                          value: selectedKategori,
+                          hint: const Text("Pilih Kategori"),
+                          items: kategoriList.map((item) {
+                            return DropdownMenuItem<String>(
+                              key: Key(item.kodeKategoriPenilaian),
+                              value: item.kodeKategoriPenilaian,
+                              child: Text(
+                                "${item.kodeKategoriPenilaian} - ${item.namaKategoriPenilaian}",
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setStateDialog(() {
+                              selectedKategori = value;
+                            });
+                          },
+                        ),
+
+                  const SizedBox(height: 12),
+
+                  // ✍️ INPUT
+                  TextField(
+                    minLines: 1,
+                    maxLines: 5,
+                    controller: pernyataanController,
+                    decoration: const InputDecoration(
+                      labelText: "Pernyataan",
+                      hintText: "Masukkan pernyataan",
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                      ),
+                      contentPadding: EdgeInsets.all(12),
+                    ),
+                  ),
+                ],
+              ),
+
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Batal"),
+                ),
+
+                ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          // 🔴 VALIDASI
+                          if (selectedKategori == null ||
+                              pernyataanController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Semua field wajib diisi"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          setStateDialog(() => isLoading = true);
+
+                          try {
+                            await ApiItemPenilaianService().tambahItemPenilaian(
+                              selectedKategori!,
+                              pernyataanController.text,
+                            );
+
+                            Navigator.pop(context);
+                            refreshData(); // reload list
+                          } catch (e) {
+                            print(e);
+                          }
+
+                          setStateDialog(() => isLoading = false);
+                        },
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text("Simpan"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -79,17 +174,14 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
       body: FutureBuilder<List<ItemPenilaianModel>>(
         future: futureItems,
         builder: (context, snapshot) {
-          // 🔄 Loading
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // ❌ Error
           if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          // 📦 Empty
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text("Data kosong"));
           }
@@ -99,10 +191,9 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
           return ListView.separated(
             padding: const EdgeInsets.all(12),
             itemCount: items.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 10),
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final item = items[index];
-
               final isValid = item.status == "valid";
 
               return Container(
@@ -117,25 +208,14 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                     ),
                   ],
                 ),
+
+                // CONTENT ( Pernyataan, Kategori, Versi, Status )
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
                   ),
 
-                  // // 🔵 ICON KATEGORI
-                  // leading: CircleAvatar(
-                  //   backgroundColor: Colors.blue.shade100,
-                  //   child: Text(
-                  //     item.kodeKategori,
-                  //     style: const TextStyle(
-                  //       fontSize: 10,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
-
-                  // 📌 JUDUL
                   title: Text(
                     item.pernyataan,
                     style: const TextStyle(fontWeight: FontWeight.w600),
@@ -143,18 +223,15 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  // 📊 SUBTITLE
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Kategori: ${item.kodeKategori} | Versi: ${item.versi}",
+                          "Kategori: ${item.kodeKategori} | V: ${item.nilaiAiken} | Versi: ${item.versi}",
                         ),
                         const SizedBox(height: 4),
-
-                        // 🟢 STATUS BADGE
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -176,14 +253,33 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                     ),
                   ),
 
-                  // ➡️ ICON
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  // ICON EDIT DAN DELETE ITEM PENILAIAN
+                  trailing: Row(
+                    mainAxisSize:
+                        MainAxisSize.min, // 🔥 penting biar tidak full lebar
+                    children: [
+                      // ✏️ EDIT
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          // editItem(item); // nanti kita buat function-nya
+                        },
+                      ),
 
+                      // 🗑 DELETE
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          // hapusItem(item.id); // sesuaikan id
+                        },
+                      ),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ItemPenilaianDetail(),
+                        builder: (_) => const ItemPenilaianDetail(),
                       ),
                     );
                   },
@@ -194,7 +290,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
         },
       ),
 
-      // ➕ FLOATING BUTTON
+      // 👇 TOMBOL TAMBAH ITEM PENILAIAN
       floatingActionButton: FloatingActionButton(
         onPressed: tambahItem,
         child: const Icon(Icons.add),
