@@ -89,6 +89,7 @@ class ApiKategoriPenilaianService {
 
 // ================ ITEM PENILAIAN ================
 class ApiItemPenilaianService {
+  // GET ALL DATA ITEM PENILAIAN
   Future<List<ItemPenilaianModel>> getItemPenilaian() async {
     final response = await http.get(Uri.parse('$baseUrl/item-penilaian'));
 
@@ -101,7 +102,7 @@ class ApiItemPenilaianService {
     }
   }
 
-  // 🔥 TAMBAHAN
+  // 🔥 TAMBAH ITEM PENILAIAN
   Future<void> tambahItemPenilaian(
     String kodeKategori,
     String pernyataan,
@@ -125,6 +126,47 @@ class ApiItemPenilaianService {
       print('Berhasil disimpan');
     } else {
       throw Exception('Gagal simpan');
+    }
+  }
+
+  //EDIT ITEM PENILAIAN
+  Future<void> editItemPenilaian(
+    int id,
+    String kodeKategori,
+    String pernyataan,
+  ) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/item-penilaian/$id'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'id_item_penilaian': id,
+        'kode_kategori_penilaian': kodeKategori,
+        'pernyataan': pernyataan,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('Berhasil disimpan');
+    } else {
+      throw Exception('Gagal simpan');
+    }
+  }
+
+  //DELETE ITEM PENILAIAN
+  Future<void> deleteItemPenilaian(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/item-penilaian/$id'),
+      headers: {'Accept': 'application/json'},
+    );
+
+    print("DELETE STATUS: ${response.statusCode}");
+    print("DELETE BODY: ${response.body}");
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Gagal hapus');
     }
   }
 }
