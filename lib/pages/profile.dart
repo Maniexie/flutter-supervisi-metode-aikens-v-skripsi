@@ -25,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (data != null) {
       setState(() {
         nama = data['nama'] ?? 'No Name';
-        email = data['alamat'] ?? 'No Email';
+        email = data['email'] ?? 'No Email';
       });
     }
   }

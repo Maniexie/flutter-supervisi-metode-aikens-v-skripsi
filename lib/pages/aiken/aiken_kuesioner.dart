@@ -38,23 +38,36 @@ class _AikenKuesionerPageState extends State<AikenKuesionerPage> {
     });
   }
 
-  void submit() {
-    bool lengkap = penilaian.every((e) => e["nilai"] != null);
+void submit() async {
+  bool lengkap = penilaian.every((e) => e["nilai"] != null);
 
-    if (!lengkap) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Semua item harus dinilai")));
-      return;
-    }
-
-    print(penilaian);
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Berhasil disimpan")));
+  if (!lengkap) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Semua item harus dinilai")),
+    );
+    return;
   }
 
+  try {
+    final service = JawabanValidatorService();
+
+    await service.submitJawabanValidator(
+      widget.versi,
+      penilaian,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Berhasil disimpan")),
+    );
+
+    Navigator.pop(context);
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error: $e")),
+    );
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

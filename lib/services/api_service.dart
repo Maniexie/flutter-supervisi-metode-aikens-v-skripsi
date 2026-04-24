@@ -7,6 +7,16 @@ import 'package:supervisi/pages/models/KategoriPenilaianModel.dart';
 
 const String baseUrl = "http://localhost:8000/api";
 
+Future<void> saveToken(String token) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('token', token);
+}
+
+Future<String?> getToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token');
+}
+
 // ================ AUTH ================
 class ApiLoginService {
   static Future<Map<String, dynamic>> login(
@@ -19,10 +29,14 @@ class ApiLoginService {
       body: {"username": username, "password": password},
     );
 
-    return jsonDecode(response.body);
-  }
+    final json = jsonDecode(response.body);
 
-  // 🔥 TAMBAHAN
+    if (response.statusCode == 200) {
+      return json;
+    } else {
+      throw Exception(json['message']);
+    }
+  }
 }
 
 class ApiLogoutService {
@@ -212,5 +226,84 @@ class ApiAikenService {
     } else {
       throw Exception("Gagal load kuesioner");
     }
+  }
+
+  Future<Map<String, dynamic>> getDetailKuesionerByVersi(int versi) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/item-penilaian/group-by-versi'),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+
+      final List data = json['data'];
+
+      // 🔥 FILTER DI FLUTTER
+      final result = data.cast<Map<String, dynamic>?>().firstWhere(
+        (e) => e?['versi'] == versi,
+        orElse: () => null,
+      );
+
+      if (result == null) return {};
+
+      return result;
+    } else {
+      throw Exception("Gagal load detail kuesioner");
+    }
+  }
+}
+
+class JawabanValidatorService {
+  Future<bool> submitJawabanValidator(
+    int versi,
+    List<Map<String, dynamic>> jawaban,
+  ) async {
+    final token = await getToken(); // 🔥 ambil token
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/jawaban-validator/submit'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // 🔥 WAJIB
+      },
+      body: jsonEncode({
+        'versi': versi,
+        'jawaban': jawaban
+            .map((e) => {'id_item_penilaian': e['id'], 'jawaban': e['nilai']})
+            .toList(),
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
+  Future<List<int>> getStatusJawaban() async {
+    final token = await getToken();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/jawaban-validator/status-pengujian'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
+
+    if (response.statusCode != 200) {
+      throw Exception("Gagal ambil status");
+    }
+
+    final json = jsonDecode(response.body);
+
+    // 🔥 FIX DISINI
+    final data = json['data'];
+
+    if (data == null) return []; // ⛑️ HANDLE NULL
+
+    return List<int>.from(data);
   }
 }
