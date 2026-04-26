@@ -32,10 +32,32 @@ class ApiLoginService {
     final json = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return json;
+      return json; // 🔥 langsung return semua
     } else {
       throw Exception(json['message']);
     }
+  }
+
+  static Future<bool> getIsValidator() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isValidator') ?? false;
+  }
+
+  static Future<void> saveLoginData(
+    String token,
+    String role,
+    bool isValidator,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('token', token);
+    await prefs.setString('role', role);
+    await prefs.setBool('isValidator', isValidator);
+  }
+
+  static Future<String?> getRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('role');
   }
 }
 

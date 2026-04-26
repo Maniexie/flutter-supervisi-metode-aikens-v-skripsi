@@ -11,8 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-
   final TextEditingController usernameController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
@@ -62,49 +60,38 @@ class _LoginPageState extends State<LoginPage> {
                   : ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            isLoading = true;
-                          });
+                          setState(() => isLoading = true);
 
                           try {
-                            var result = await ApiLoginService.login(
+                            final result = await ApiLoginService.login(
                               usernameController.text,
                               passwordController.text,
                             );
 
-                            if (result['token'] != null) {
-                              final prefs =
-                                  await SharedPreferences.getInstance();
+                            final token = result['token'];
+                            final role = result['user']['role'];
+                            final isValidator = result['user']['isValidator'];
 
-                              await prefs.setString('token', result['token']);
-                            }
+                            await ApiLoginService.saveLoginData(
+                              token,
+                              role,
+                              isValidator,
+                            );
 
-                            if (result['success'] == true) {
-                              Navigator.pushNamed(
-                                context,
-                                DashboardPage.routeName,
-                              );
+                            Navigator.pushReplacementNamed(
+                              context,
+                              DashboardPage.routeName,
+                            );
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Login success with username ${usernameController.text}',
-                                  ),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Login failed')),
-                              );
-                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(result['message'])),
+                            );
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: $e')),
+                              SnackBar(content: Text("Error: $e")),
                             );
                           } finally {
-                            setState(() {
-                              isLoading = false;
-                            });
+                            setState(() => isLoading = false);
                           }
                         }
                       },
