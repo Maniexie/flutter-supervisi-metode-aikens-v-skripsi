@@ -5,6 +5,7 @@ class ItemPenilaianModel {
   final int versi;
   final double nilaiAiken;
   final String status;
+  bool isDigunakan = false;
 
   ItemPenilaianModel({
     required this.id,
@@ -13,6 +14,7 @@ class ItemPenilaianModel {
     required this.versi,
     required this.nilaiAiken,
     required this.status,
+    required this.isDigunakan,
   });
 
   factory ItemPenilaianModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class ItemPenilaianModel {
       versi: int.tryParse(json['versi'].toString()) ?? 0,
       nilaiAiken: double.tryParse(json['nilai_aiken'].toString()) ?? 0.0,
       status: json['status']?.toString() ?? '-',
+      isDigunakan: json['isDigunakan'] == 1 || json['isDigunakan'] == true,
     );
   }
 }

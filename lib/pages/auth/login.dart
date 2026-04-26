@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supervisi/pages/dashboard.dart';
 import 'package:supervisi/services/api_service.dart';
 
@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.asset('assets/images/image1.jpg', height: 100),
+                child: Image.asset('assets/images/image.jpg', height: 100),
               ),
               TextFormField(
                 controller: usernameController,

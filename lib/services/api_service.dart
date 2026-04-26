@@ -126,6 +126,7 @@ class ApiKategoriPenilaianService {
 // ================ ITEM PENILAIAN ================
 class ApiItemPenilaianService {
   // GET ALL DATA ITEM PENILAIAN
+
   Future<List<ItemPenilaianModel>> getItemPenilaian() async {
     final response = await http.get(Uri.parse('$baseUrl/item-penilaian'));
 
@@ -205,6 +206,46 @@ class ApiItemPenilaianService {
       throw Exception('Gagal hapus');
     }
   }
+
+Future<bool> toggleDigunakan(int id) async {
+  final token = await getToken();
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/item-penilaian/toggle/$id"),
+    headers: {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final json = jsonDecode(response.body);
+    return json['isDigunakan'];
+  } else {
+    throw Exception("Gagal toggle");
+  }
+}
+
+Future<Map<String, dynamic>> getItemDigunakan() async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/item-penilaian/digunakan'),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Gagal ambil data');
+  }
+}
+
+Future<List<ItemPenilaianModel>> getItemUntukSupervisi() async {
+  final res = await ApiItemPenilaianService().getItemDigunakan();
+
+  List data = res['data'];
+
+  return data.map((e) => ItemPenilaianModel.fromJson(e)).toList();
+}
+
 }
 
 class ApiAikenService {

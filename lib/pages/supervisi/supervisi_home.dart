@@ -1,5 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
+import 'package:supervisi/pages/supervisi/supervisi_kuesioner.dart';
+import 'package:supervisi/services/api_service.dart';
 
 class SupervisiHomePage extends StatefulWidget {
   const SupervisiHomePage({super.key});
@@ -18,6 +21,8 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
   ];
 
   final List<String> months = ["Jan", "Feb", "Mar", "Apr", "Mei"];
+
+  List<ItemPenilaianModel> supervisiItems = [];
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +103,20 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
               leading: Icon(Icons.assignment),
               title: Text("Penilaian"),
               onTap: () {},
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.assignment),
+              title: Text("Kuesioner"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SupervisiKuesionerPage(),
+                  ),
+                );
+              },
             ),
           ),
         ],

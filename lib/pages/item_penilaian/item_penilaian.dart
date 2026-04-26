@@ -25,6 +25,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
   List<ItemPenilaianModel> kategoriList = [];
   String? selectedKategori;
   bool isLoadingKategori = true;
+  int totalDigunakan = 0;
 
   @override
   List<ItemPenilaianModel> items = [];
@@ -34,6 +35,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
   void initState() {
     super.initState();
     loadData();
+    loadTotalDigunakan();
   }
 
   Future<void> loadData() async {
@@ -42,6 +44,19 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
       setState(() {
         items = data;
         isLoading = false;
+        print(data.first.isDigunakan);
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> loadTotalDigunakan() async {
+    try {
+      final res = await ApiItemPenilaianService().getItemDigunakan();
+
+      setState(() {
+        totalDigunakan = res['total'];
       });
     } catch (e) {
       print(e);
@@ -338,7 +353,31 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Item Penilaian"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Item Penilaian"),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  "$totalDigunakan Item",
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
 
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -411,6 +450,28 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (item.status == "valid")
+                          Switch(
+                            value: item.isDigunakan,
+                            onChanged: (value) async {
+                              try {
+                                final newValue = await ApiItemPenilaianService()
+                                    .toggleDigunakan(item.id);
+
+                                setState(() {
+                                  item.isDigunakan = newValue;
+                                  print(item.isDigunakan);
+                                });
+                                await loadTotalDigunakan(); // 🔥 update count
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Gagal update")),
+                                );
+                              }
+                            },
+                          )
+                        else
+                          const Icon(Icons.block, color: Colors.grey),
                         IconButton(
                           icon: const Icon(Icons.edit, color: Colors.blue),
                           onPressed: () => editItem(item),
