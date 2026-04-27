@@ -3,7 +3,14 @@ import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/services/api_service.dart';
 
 class SupervisiKuesionerPage extends StatefulWidget {
-  const SupervisiKuesionerPage({super.key});
+  final int idGuru;
+  final int idJadwal;
+
+  const SupervisiKuesionerPage({
+    super.key,
+    required this.idGuru,
+    required this.idJadwal,
+  });
 
   @override
   State<SupervisiKuesionerPage> createState() => _SupervisiKuesionerPageState();
@@ -13,6 +20,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
   List<ItemPenilaianModel> supervisiItems = [];
   bool isLoading = true;
   String? errorMessage;
+  Map<int, int> jawaban = {};
 
   @override
   void initState() {
@@ -38,6 +46,30 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
     }
   }
 
+  void submitJawaban() async {
+    if (jawaban.length != supervisiItems.length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Semua pertanyaan wajib diisi")),
+      );
+      return;
+    }
+
+    try {
+      await ApiSupervisiService().submitSupervisi(
+        idGuru: widget.idGuru,
+        idJadwal: widget.idJadwal,
+        jawaban: jawaban,
+      );
+
+      // 🔥 KIRIM SIGNAL BERHASIL KE HALAMAN SEBELUMNYA
+      Navigator.pop(context, true);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal: $e")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,9 +92,57 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
             itemCount: supervisiItems.length,
             itemBuilder: (context, index) {
               final item = supervisiItems[index];
-              return ListTile(
-                title: Text(item.pernyataan),
-                subtitle: Text("Kategori: ${item.kodeKategori}"),
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.pernyataan,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // 🔥 PILIHAN NILAI
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(5, (i) {
+                          int nilai = i + 1;
+
+                          return Row(
+                            children: [
+                              Radio<int>(
+                                value: nilai,
+                                groupValue: jawaban[item.id],
+                                onChanged: (val) {
+                                  setState(() {
+                                    jawaban[item.id] = val!;
+                                  });
+                                },
+                              ),
+                              Text("$nilai"),
+                            ],
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // 🔥 BUTTON SIMPAN
+                      ElevatedButton(
+                        onPressed: submitJawaban,
+                        child: const Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );

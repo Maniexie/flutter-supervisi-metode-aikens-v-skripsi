@@ -207,45 +207,41 @@ class ApiItemPenilaianService {
     }
   }
 
-Future<bool> toggleDigunakan(int id) async {
-  final token = await getToken();
+  Future<bool> toggleDigunakan(int id) async {
+    final token = await getToken();
 
-  final response = await http.post(
-    Uri.parse("$baseUrl/item-penilaian/toggle/$id"),
-    headers: {
-      "Authorization": "Bearer $token",
-      "Accept": "application/json"
-    },
-  );
+    final response = await http.post(
+      Uri.parse("$baseUrl/item-penilaian/toggle/$id"),
+      headers: {"Authorization": "Bearer $token", "Accept": "application/json"},
+    );
 
-  if (response.statusCode == 200) {
-    final json = jsonDecode(response.body);
-    return json['isDigunakan'];
-  } else {
-    throw Exception("Gagal toggle");
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['isDigunakan'];
+    } else {
+      throw Exception("Gagal toggle");
+    }
   }
-}
 
-Future<Map<String, dynamic>> getItemDigunakan() async {
-  final response = await http.get(
-    Uri.parse('$baseUrl/item-penilaian/digunakan'),
-  );
+  Future<Map<String, dynamic>> getItemDigunakan() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/item-penilaian/digunakan'),
+    );
 
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Gagal ambil data');
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Gagal ambil data');
+    }
   }
-}
 
-Future<List<ItemPenilaianModel>> getItemUntukSupervisi() async {
-  final res = await ApiItemPenilaianService().getItemDigunakan();
+  Future<List<ItemPenilaianModel>> getItemUntukSupervisi() async {
+    final res = await ApiItemPenilaianService().getItemDigunakan();
 
-  List data = res['data'];
+    List data = res['data'];
 
-  return data.map((e) => ItemPenilaianModel.fromJson(e)).toList();
-}
-
+    return data.map((e) => ItemPenilaianModel.fromJson(e)).toList();
+  }
 }
 
 class ApiAikenService {
@@ -368,5 +364,78 @@ class JawabanValidatorService {
     if (data == null) return []; // ⛑️ HANDLE NULL
 
     return List<int>.from(data);
+  }
+}
+
+class ApiSupervisiService {
+  Future<void> submitSupervisi({
+    required int idGuru,
+    required int idJadwal,
+    required Map<int, int> jawaban,
+  }) async {
+    final token = await getToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/supervisi/simpan-jawaban"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "id_guru": idGuru,
+        "id_jadwal_supervisi": idJadwal,
+        "jawaban": jawaban.entries.map((e) {
+          return {"id_item": e.key, "nilai": e.value};
+        }).toList(),
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      print("TOKEN: $token");
+      throw Exception("Gagal kirim");
+    }
+  }
+
+  Future<List<dynamic>> getGuruByJadwalSupervisi(int idJadwal) async {
+    final token = await getToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/supervisi/get-list-guru/$idJadwal"),
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Gagal ambil data guru");
+    }
+
+    final json = jsonDecode(response.body);
+    return json['data'];
+  }
+
+  Future<void> tambahJadwal({
+    required String namaPeriode,
+    required String tanggalMulai,
+    required String tanggalSelesai,
+    required String deskripsi,
+  }) async {
+    final token = await getToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/supervisi/tambah-jadwal-supervisi"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "nama_periode": namaPeriode,
+        "tanggal_mulai": tanggalMulai,
+        "tanggal_selesai": tanggalSelesai,
+        "deskripsi": deskripsi,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Gagal tambah jadwal");
+    }
   }
 }
