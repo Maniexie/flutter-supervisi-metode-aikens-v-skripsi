@@ -1,32 +1,45 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/supervisi/supervisi_list_guru.dart';
-import 'package:supervisi/pages/supervisi/supervisi_jadwal.dart';
 import 'package:supervisi/services/api_service.dart';
 
-class SupervisiHomePage extends StatefulWidget {
-  const SupervisiHomePage({super.key});
+class SupervisiJadwalPage extends StatefulWidget {
+  const SupervisiJadwalPage({super.key});
 
   @override
-  State<SupervisiHomePage> createState() => _SupervisiHomePageState();
+  State<SupervisiJadwalPage> createState() => _SupervisiJadwalPageState();
 }
 
-class _SupervisiHomePageState extends State<SupervisiHomePage> {
-  final getGuruByJadwalSupervisi =
-      ApiSupervisiService().getGuruByJadwalSupervisi;
+class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
+  List jadwalList = [];
+  bool isLoading = true;
 
-  final List<FlSpot> spots = [
-    FlSpot(0, 3.5),
-    FlSpot(1, 3.8),
-    FlSpot(2, 4.0),
-    FlSpot(3, 3.7),
-    FlSpot(4, 4.2),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    loadJadwal();
+  }
 
-  final List<String> months = ["Jan", "Feb", "Mar", "Apr", "Mei"];
+  Future<void> loadJadwal() async {
+    try {
+      final data = await ApiSupervisiService().getJadwalSupervisi();
 
-  List<ItemPenilaianModel> supervisiItems = [];
+      setState(() {
+        jadwalList = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void goToGuru(int idJadwal) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SupervisiListGuruPage(idJadwal: idJadwal),
+      ),
+    );
+  }
 
   void showTambahJadwalDialog() {
     final namaController = TextEditingController();
@@ -154,44 +167,47 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Supervisi")),
+      appBar: AppBar(title: const Text("Jadwal Supervisi")),
 
-      body: ListView(
-        padding: EdgeInsets.all(16),
-        children: [
-          Text(
-            "Supervisi Periode ${DateTime.now().toString().split(' ')[0]} - ${DateTime.timestamp().toString().split(' ')[0]}",
-          ),
-          //  CARD SUMMARY
-          Card(
-            child: ListTile(title: Text("Total Guru"), trailing: Text("25")),
-          ),
-
-          SizedBox(height: 10),
-
-          Card(
-            child: ListTile(title: Text("Sudah Dinilai"), trailing: Text("18")),
-          ),
-
-          SizedBox(height: 20),
-
-          // 🔹 FITUR TAMBAHAN
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.assignment),
-              title: Text("Daftar Jadwal Supervisi"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SupervisiJadwalPage(),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : jadwalList.isEmpty
+          ? const Center(child: Text("Belum ada jadwal"))
+          : ListView.builder(
+              itemCount: jadwalList.length,
+              itemBuilder: (context, index) {
+                final item = jadwalList[index];
+                bool isActive =
+                    DateTime.now().isAfter(
+                      DateTime.parse(item['tanggal_mulai']),
+                    ) &&
+                    DateTime.now().isBefore(
+                      DateTime.parse(item['tanggal_selesai']),
+                    );
+                return Card(
+                  margin: const EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Text(item['nama_periode']),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${item['tanggal_mulai']} - ${item['tanggal_selesai']}",
+                        ),
+                        Text(
+                          isActive ? "Aktif" : "Selesai",
+                          style: TextStyle(
+                            color: isActive ? Colors.green : Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    trailing: const Icon(Icons.arrow_forward),
+                    onTap: () => goToGuru(item['id_jadwal_supervisi']),
                   ),
                 );
               },
             ),
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: showTambahJadwalDialog,
         child: const Icon(Icons.add),

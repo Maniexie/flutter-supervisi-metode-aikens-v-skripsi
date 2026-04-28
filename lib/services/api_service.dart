@@ -438,4 +438,53 @@ class ApiSupervisiService {
       throw Exception("Gagal tambah jadwal");
     }
   }
+
+  Future<List<dynamic>> getJadwalSupervisi() async {
+    final token = await getToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/supervisi/get-list-jadwal-supervisi"),
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Gagal ambil jadwal");
+    }
+
+    final json = jsonDecode(response.body);
+    return json['data'];
+  }
+
+  Future<void> editJadwal({
+    required int idJadwal,
+    required String namaPeriode,
+    required String deskripsi,
+  }) async {
+    final token = await getToken();
+
+    final response = await http.put(
+      Uri.parse("$baseUrl/supervisi/edit-jadwal/$idJadwal"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({"nama_periode": namaPeriode, "deskripsi": deskripsi}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Gagal update jadwal");
+    }
+  }
+
+  Future<Map<String, dynamic>> getDetailJadwalSupervisi(int id) async {
+    final token = await getToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/supervisi/detail-jadwal-supervisi/$id"),
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    final json = jsonDecode(response.body);
+    return json['data'];
+  }
 }
