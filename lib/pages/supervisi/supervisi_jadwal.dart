@@ -164,6 +164,47 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
     );
   }
 
+  void confirmDelete(int idJadwal) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Konfirmasi"),
+          content: const Text("Apakah yakin ingin menghapus jadwal ini?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              onPressed: () async {
+                try {
+                  await ApiSupervisiService().deleteJadwal(idJadwal);
+
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Berhasil dihapus")),
+                  );
+
+                  loadJadwal(); // 🔥 refresh list
+                } catch (e) {
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text("Gagal: $e")));
+                }
+              },
+              child: const Text("Hapus"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,6 +225,7 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
                     DateTime.now().isBefore(
                       DateTime.parse(item['tanggal_selesai']),
                     );
+
                 return Card(
                   margin: const EdgeInsets.all(10),
                   child: ListTile(
@@ -202,7 +244,20 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
                         ),
                       ],
                     ),
-                    trailing: const Icon(Icons.arrow_forward),
+
+                    // 🔥 MULTI ICON (DETAIL + DELETE)
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () =>
+                              confirmDelete(item['id_jadwal_supervisi']),
+                        ),
+                        const Icon(Icons.arrow_forward),
+                      ],
+                    ),
+
                     onTap: () => goToGuru(item['id_jadwal_supervisi']),
                   ),
                 );

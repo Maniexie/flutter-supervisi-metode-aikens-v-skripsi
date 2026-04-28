@@ -459,17 +459,28 @@ class ApiSupervisiService {
     required int idJadwal,
     required String namaPeriode,
     required String deskripsi,
+    required String tanggalMulai,
+    required String tanggalSelesai,
   }) async {
     final token = await getToken();
 
-    final response = await http.put(
-      Uri.parse("$baseUrl/supervisi/edit-jadwal/$idJadwal"),
+    final response = await http.post(
+      // 🔥 GANTI POST
+      Uri.parse("$baseUrl/supervisi/edit-jadwal-supervisi/$idJadwal"),
       headers: {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
-      body: jsonEncode({"nama_periode": namaPeriode, "deskripsi": deskripsi}),
+      body: jsonEncode({
+        "nama_periode": namaPeriode,
+        "deskripsi": deskripsi,
+        "tanggal_mulai": tanggalMulai,
+        "tanggal_selesai": tanggalSelesai,
+      }),
     );
+
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
 
     if (response.statusCode != 200) {
       throw Exception("Gagal update jadwal");
@@ -486,5 +497,21 @@ class ApiSupervisiService {
 
     final json = jsonDecode(response.body);
     return json['data'];
+  }
+
+  Future<void> deleteJadwal(int idJadwal) async {
+    final token = await getToken();
+
+    final response = await http.delete(
+      Uri.parse("$baseUrl/supervisi/delete-jadwal-supervisi/$idJadwal"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Gagal hapus jadwal");
+    }
   }
 }

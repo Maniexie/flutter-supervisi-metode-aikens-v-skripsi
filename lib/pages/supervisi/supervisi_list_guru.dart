@@ -16,6 +16,23 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
   bool isLoading = true;
 
   String namaPeriode = '';
+  String deskripsi = '';
+  DateTime? tanggalMulai;
+  DateTime? tanggalSelesai;
+
+  // ================= UTIL =================
+  String formatDate(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
+
+  DateTime? safeParseDate(dynamic value) {
+    if (value == null) return null;
+    try {
+      return DateTime.parse(value.toString());
+    } catch (e) {
+      return null;
+    }
+  }
 
   int get totalGuru => guruList.length;
 
@@ -24,13 +41,14 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
 
   double get progress => totalGuru == 0 ? 0 : totalSudah / totalGuru;
 
+  // ================= INIT =================
   @override
   void initState() {
     super.initState();
     loadData();
   }
 
-  // 🔥 LOAD SEMUA DATA SEKALIGUS
+  // ================= LOAD DATA =================
   Future<void> loadData() async {
     setState(() => isLoading = true);
 
@@ -46,14 +64,21 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
       setState(() {
         guruList = guru;
         namaPeriode = jadwal['nama_periode'] ?? '';
+        deskripsi = jadwal['deskripsi'] ?? '';
+
+        // 🔥 AMAN PARSE
+        tanggalMulai = safeParseDate(jadwal['tanggal_mulai']);
+        tanggalSelesai = safeParseDate(jadwal['tanggal_selesai']);
+
         isLoading = false;
       });
     } catch (e) {
-      print(e);
+      print("ERROR LOAD: $e");
       setState(() => isLoading = false);
     }
   }
 
+  // ================= NAVIGASI =================
   void goToKuesioner(int idGuru, bool sudah) async {
     if (sudah) {
       ScaffoldMessenger.of(
@@ -72,69 +97,142 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
 
     if (result == true) {
       loadData();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Supervisi berhasil disimpan")),
-      );
     }
   }
 
+  // ================= EDIT DIALOG =================
   void showEditJadwalDialog() {
     final namaController = TextEditingController(text: namaPeriode);
-    final deskripsiController = TextEditingController();
+    final deskripsiController = TextEditingController(text: deskripsi);
+
+    DateTime? tMulai = tanggalMulai;
+    DateTime? tSelesai = tanggalSelesai;
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Edit Jadwal Supervisi"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: namaController,
-                decoration: const InputDecoration(labelText: "Nama Periode"),
-              ),
-              TextField(
-                controller: deskripsiController,
-                decoration: const InputDecoration(labelText: "Deskripsi"),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Batal"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await ApiSupervisiService().editJadwal(
-                    idJadwal: widget.idJadwal,
-                    namaPeriode: namaController.text,
-                    deskripsi: deskripsiController.text,
-                  );
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text("Edit Jadwal Supervisi"),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: namaController,
+                      decoration: const InputDecoration(
+                        labelText: "Nama Periode",
+                      ),
+                    ),
+                    TextField(
+                      controller: deskripsiController,
+                      decoration: const InputDecoration(labelText: "Deskripsi"),
+                    ),
+                    const SizedBox(height: 10),
 
-                  Navigator.pop(context);
-                  loadData();
+                    // 🔥 TANGGAL MULAI
+                    ListTile(
+                      title: Text(
+                        tMulai != null
+                            ? formatDate(tMulai!)
+                            : "Pilih Tanggal Mulai",
+                      ),
+                      trailing: const Icon(Icons.calendar_today),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: tMulai ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        );
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Berhasil update")),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text("Gagal: $e")));
-                }
-              },
-              child: const Text("Simpan"),
-            ),
-          ],
+                        if (picked != null) {
+                          setStateDialog(() => tMulai = picked);
+                        }
+                      },
+                    ),
+
+                    // 🔥 TANGGAL SELESAI
+                    ListTile(
+                      title: Text(
+                        tSelesai != null
+                            ? formatDate(tSelesai!)
+                            : "Pilih Tanggal Selesai",
+                      ),
+                      trailing: const Icon(Icons.calendar_today),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: tSelesai ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        );
+
+                        if (picked != null) {
+                          setStateDialog(() => tSelesai = picked);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Batal"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (tMulai == null || tSelesai == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Tanggal wajib dipilih")),
+                      );
+                      return;
+                    }
+
+                    if (tSelesai!.isBefore(tMulai!)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Tanggal selesai tidak boleh sebelum mulai",
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    try {
+                      await ApiSupervisiService().editJadwal(
+                        idJadwal: widget.idJadwal,
+                        namaPeriode: namaController.text,
+                        deskripsi: deskripsiController.text,
+                        tanggalMulai: formatDate(tMulai!),
+                        tanggalSelesai: formatDate(tSelesai!),
+                      );
+
+                      Navigator.pop(context);
+                      loadData();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Berhasil update")),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text("Gagal: $e")));
+                    }
+                  },
+                  child: const Text("Simpan"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
+  // ================= UI =================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,12 +245,11 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
           ),
         ],
       ),
-
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // 🔥 SUMMARY
+                // SUMMARY
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: Row(
@@ -177,7 +274,7 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
                   ),
                 ),
 
-                // 🔥 PROGRESS BAR
+                // PROGRESS
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Column(
@@ -185,18 +282,14 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
                     children: [
                       Text("Progress ${(progress * 100).toStringAsFixed(0)}%"),
                       const SizedBox(height: 6),
-                      LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 8,
-                        color: progress == 1 ? Colors.green : Colors.blue,
-                      ),
+                      LinearProgressIndicator(value: progress, minHeight: 8),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 10),
 
-                // 🔥 LIST GURU
+                // LIST
                 Expanded(
                   child: ListView.builder(
                     itemCount: guruList.length,
