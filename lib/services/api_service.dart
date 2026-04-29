@@ -121,6 +121,51 @@ class ApiKategoriPenilaianService {
       throw Exception('Failed to load kategori');
     }
   }
+
+  Future<void> tambahKategoriPenilaian(
+    String kodeKategori,
+    String namaKategori,
+  ) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/kategori-penilaian'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'kode_kategori_penilaian': kodeKategori,
+        'nama_kategori_penilaian': namaKategori,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Kategori Penilaian berhasil ditambahkan');
+    } else {
+      throw Exception('Failed to add kategori penilaian');
+    }
+  }
+
+  Future editKategoriPenilaian(String kode, String nama) async {
+    final res = await http.put(
+      Uri.parse('$baseUrl/kategori-penilaian/$kode'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'nama_kategori_penilaian': nama}),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception("Gagal edit");
+    }
+  }
+
+  Future deleteKategoriPenilaian(String kode) async {
+    final res = await http.delete(
+      Uri.parse('$baseUrl/kategori-penilaian/$kode'),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception("Gagal hapus");
+    }
+  }
 }
 
 // ================ ITEM PENILAIAN ================
@@ -143,6 +188,7 @@ class ApiItemPenilaianService {
   Future<void> tambahItemPenilaian(
     String kodeKategori,
     String pernyataan,
+    String versi,
   ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/item-penilaian'),
@@ -153,6 +199,7 @@ class ApiItemPenilaianService {
       body: jsonEncode({
         'kode_kategori_penilaian': kodeKategori,
         'pernyataan': pernyataan,
+        'versi': versi,
       }),
     );
 
@@ -171,6 +218,7 @@ class ApiItemPenilaianService {
     int id,
     String kodeKategori,
     String pernyataan,
+    String versi,
   ) async {
     final response = await http.put(
       Uri.parse('$baseUrl/item-penilaian/$id'),
@@ -182,6 +230,7 @@ class ApiItemPenilaianService {
         'id_item_penilaian': id,
         'kode_kategori_penilaian': kodeKategori,
         'pernyataan': pernyataan,
+        'versi': versi,
       }),
     );
 

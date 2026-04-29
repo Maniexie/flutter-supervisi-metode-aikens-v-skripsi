@@ -66,7 +66,9 @@ class _AikenHomePageState extends State<AikenHomePage> {
                     ),
                   ),
                   leading: Icon(
-                    sudahDijawab ? Icons.check_circle : Icons.cancel,
+                    sudahDijawab
+                        ? Icons.check_circle
+                        : Icons.radio_button_unchecked,
                     color: sudahDijawab ? Colors.green : Colors.red,
                   ),
                   onTap: sudahDijawab

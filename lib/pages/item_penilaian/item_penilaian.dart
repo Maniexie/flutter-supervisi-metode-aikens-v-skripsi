@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/item_penilaian/kategori_penilaian/kategori_penilaian_home.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/models/KategoriPenilaianModel.dart';
 import 'package:supervisi/services/api_service.dart';
+import 'package:flutter/services.dart';
 
 class ItemPenilaian extends StatefulWidget {
   const ItemPenilaian({super.key});
@@ -26,6 +28,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
   String? selectedKategori;
   bool isLoadingKategori = true;
   int totalDigunakan = 0;
+  bool sudahLoad = false;
 
   @override
   List<ItemPenilaianModel> items = [];
@@ -66,6 +69,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
   @override
   void tambahItem() {
     TextEditingController pernyataanController = TextEditingController();
+    TextEditingController versiController = TextEditingController();
 
     String? selectedKategori;
     bool isLoading = false;
@@ -78,7 +82,8 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             // 🔥 LOAD DATA SAAT DIALOG DIBUKA
-            if (isLoadingKategori) {
+            if (!sudahLoad) {
+              sudahLoad = true;
               ApiKategoriPenilaianService().getKategoriPenilaian().then((data) {
                 setStateDialog(() {
                   kategoriList = data;
@@ -86,7 +91,6 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                 });
               });
             }
-
             return AlertDialog(
               title: const Text("Tambah Item Penilaian"),
 
@@ -132,6 +136,17 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                       contentPadding: EdgeInsets.all(12),
                     ),
                   ),
+                  const SizedBox(height: 12),
+
+                  TextField(
+                    controller: versiController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      labelText: "Versi",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ],
               ),
 
@@ -156,12 +171,31 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                             return;
                           }
 
+                          if (versiController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Versi wajib diisi"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          if (int.tryParse(versiController.text) == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Versi wajib berupa angka"),
+                              ),
+                            );
+                            return;
+                          }
+
                           setStateDialog(() => isLoading = true);
 
                           try {
                             await ApiItemPenilaianService().tambahItemPenilaian(
                               selectedKategori!,
                               pernyataanController.text,
+                              versiController.text, // 🔥 TAMBAHAN
                             );
 
                             Navigator.pop(context);
@@ -192,6 +226,9 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
     TextEditingController pernyataanController = TextEditingController(
       text: item.pernyataan,
     );
+    TextEditingController versiController = TextEditingController(
+      text: item.versi.toString(),
+    );
 
     String? selectedKategori = item.kodeKategori;
 
@@ -205,7 +242,8 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             // 🔥 LOAD kategori
-            if (isLoadingKategori) {
+            if (!sudahLoad) {
+              sudahLoad = true;
               ApiKategoriPenilaianService().getKategoriPenilaian().then((data) {
                 setStateDialog(() {
                   kategoriList = data;
@@ -219,6 +257,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
 
               content: Column(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // 🔽 DROPDOWN
                   isLoadingKategori
@@ -253,6 +292,18 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                       border: OutlineInputBorder(),
                     ),
                   ),
+
+                  const SizedBox(height: 12),
+
+                  TextField(
+                    controller: versiController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      labelText: "Versi",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ],
               ),
 
@@ -276,7 +327,23 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                             );
                             return;
                           }
+                          if (versiController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Versi wajib diisi"),
+                              ),
+                            );
+                            return;
+                          }
 
+                          if (int.tryParse(versiController.text) == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Versi wajib berupa angka"),
+                              ),
+                            );
+                            return;
+                          }
                           setStateDialog(() => isLoading = true);
 
                           try {
@@ -284,6 +351,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                               item.id, // 🔥 ambil id dari item
                               selectedKategori!,
                               pernyataanController.text,
+                              versiController.text,
                             );
 
                             Navigator.pop(context);
@@ -488,9 +556,31 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
             ),
 
       // 👇 TOMBOL TAMBAH ITEM PENILAIAN
-      floatingActionButton: FloatingActionButton(
-        onPressed: tambahItem,
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: "add",
+            onPressed: tambahItem,
+            icon: const Icon(Icons.add),
+            label: const Text("Item Penilaian"),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton.extended(
+            heroTag: "refresh",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => KategoriPenilaianHomePage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.add),
+            label: const Text("Kategori Penilaian"),
+            backgroundColor: Colors.green,
+          ),
+        ],
       ),
     );
   }
