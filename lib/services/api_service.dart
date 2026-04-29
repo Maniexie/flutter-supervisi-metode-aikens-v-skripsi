@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/models/KategoriPenilaianModel.dart';
+import 'package:supervisi/pages/models/GuruModel.dart';
 
 const String baseUrl = "http://localhost:8000/api";
 
@@ -102,6 +103,28 @@ class ApiGetUserService {
     }
 
     return null;
+  }
+}
+
+// ================ GURU ================
+class ApiGuruService {
+  Future<List<GuruModel>> getGuru() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/guru"), // 🔥 endpoint list guru
+      headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
+    );
+
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((e) => GuruModel.fromJson(e)).toList();
+    } else {
+      throw Exception("Gagal load guru");
+    }
   }
 }
 

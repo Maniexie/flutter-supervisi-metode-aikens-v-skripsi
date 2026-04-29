@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
-import 'package:supervisi/pages/supervisi/supervisi_list_guru.dart';
+import 'package:supervisi/pages/supervisi/daftar_guru/daftar_guru_list.dart';
 import 'package:supervisi/pages/supervisi/supervisi_jadwal.dart';
 import 'package:supervisi/services/api_service.dart';
 
@@ -154,28 +154,26 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Supervisi")),
+      appBar: AppBar(title: Text("")),
 
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          Text(
-            "Supervisi Periode ${DateTime.now().toString().split(' ')[0]} - ${DateTime.timestamp().toString().split(' ')[0]}",
-          ),
-          //  CARD SUMMARY
-          Card(
-            child: ListTile(title: Text("Total Guru"), trailing: Text("25")),
-          ),
-
-          SizedBox(height: 10),
-
-          Card(
-            child: ListTile(title: Text("Sudah Dinilai"), trailing: Text("18")),
-          ),
-
-          SizedBox(height: 20),
+          // SizedBox(height: 20),
 
           // 🔹 FITUR TAMBAHAN
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.people),
+              title: Text("Daftar Guru"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DaftarGuruListPage()),
+                );
+              },
+            ),
+          ),
           Card(
             child: ListTile(
               leading: Icon(Icons.assignment),
