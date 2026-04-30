@@ -152,6 +152,19 @@ class ApiGuruService {
     final json = jsonDecode(res.body);
     return json['data'];
   }
+
+  Future<List<dynamic>> getStatistikGuru(int guruId) async {
+    final res = await http.get(
+      Uri.parse("$baseUrl/supervisi/statistik-guru/$guruId"),
+    );
+
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body);
+      return json['data'];
+    } else {
+      throw Exception("Gagal load statistik");
+    }
+  }
 }
 
 // ================ KATEGORI PENILAIAN ================
@@ -466,7 +479,7 @@ class JawabanValidatorService {
 }
 
 class ApiSupervisiService {
-  Future<void> submitSupervisi({
+  Future<Map<String, dynamic>> submitSupervisi({
     required int idGuru,
     required int idJadwal,
     required Map<int, int> jawaban,
@@ -488,10 +501,34 @@ class ApiSupervisiService {
       }),
     );
 
-    if (response.statusCode != 200) {
-      print("TOKEN: $token");
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body); // 🔥 PENTING
+    } else {
       throw Exception("Gagal kirim");
     }
+  }
+
+  Future<void> simpanHasilSupervisi({
+    required int guruId,
+    required int idJadwal,
+    required int nilai,
+    required String tindakLanjut,
+  }) async {
+    final token = await getToken();
+
+    await http.post(
+      Uri.parse("$baseUrl/supervisi/simpan-hasil-supervisi"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "id_guru": guruId,
+        "id_jadwal_supervisi": idJadwal, // 🔥 WAJIB
+        "nilai": nilai,
+        "kode_tindak_lanjut": tindakLanjut,
+      }),
+    );
   }
 
   Future<List<dynamic>> getGuruByJadwalSupervisi(int idJadwal) async {
@@ -610,6 +647,21 @@ class ApiSupervisiService {
 
     if (response.statusCode != 200) {
       throw Exception("Gagal hapus jadwal");
+    }
+  }
+}
+
+class ApiKodeTindakLanjutHasilSupervisiService {
+  Future<List<dynamic>> getKodeTindakLanjutHasilSupervisi() async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi"),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
     }
   }
 }

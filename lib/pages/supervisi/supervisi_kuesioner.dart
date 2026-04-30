@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
+import 'package:supervisi/pages/supervisi/supervisi_hasil_tindak_lanjut.dart';
 import 'package:supervisi/services/api_service.dart';
 
 class SupervisiKuesionerPage extends StatefulWidget {
   final int idGuru;
   final int idJadwal;
+  final String? tindakLanjut;
+  final int? nilai;
 
   const SupervisiKuesionerPage({
     super.key,
     required this.idGuru,
     required this.idJadwal,
+    this.tindakLanjut,
+    this.nilai,
   });
 
   @override
@@ -55,14 +60,24 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
     }
 
     try {
-      await ApiSupervisiService().submitSupervisi(
+      final result = await ApiSupervisiService().submitSupervisi(
         idGuru: widget.idGuru,
         idJadwal: widget.idJadwal,
         jawaban: jawaban,
       );
 
-      // 🔥 KIRIM SIGNAL BERHASIL KE HALAMAN SEBELUMNYA
-      Navigator.pop(context, true);
+      // 🔥 KIRIM DATA KE HALAMAN BERIKUTNYA
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SupervisiHasilTindakLanjutPage(
+            totalNilai: result['total_nilai'],
+            tindakLanjut: result['tindak_lanjut'],
+            guruId: widget.idGuru,
+            idJadwal: widget.idJadwal,
+          ),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(
         context,
