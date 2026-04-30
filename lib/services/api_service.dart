@@ -126,6 +126,32 @@ class ApiGuruService {
       throw Exception("Gagal load guru");
     }
   }
+
+  Future<List<dynamic>> listHasilSupervisiByGuru(int guruId) async {
+    final res = await http.get(
+      Uri.parse("$baseUrl/supervisi/hasil-supervisi/$guruId"),
+    );
+
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body);
+      return json['data'];
+    } else {
+      print(res.statusCode);
+      throw Exception("Gagal load supervisi");
+    }
+  }
+
+  Future<List<dynamic>> detailHasilSupervisiGurubyJadwal(
+    int jadwalId,
+    int guruId,
+  ) async {
+    final res = await http.get(
+      Uri.parse("$baseUrl/supervisi/hasil-supervisi/$jadwalId/$guruId"),
+    );
+
+    final json = jsonDecode(res.body);
+    return json['data'];
+  }
 }
 
 // ================ KATEGORI PENILAIAN ================
