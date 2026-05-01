@@ -351,6 +351,10 @@ class ApiItemPenilaianService {
 
     List data = res['data'];
 
+    if (data.isEmpty) {
+      data = await ApiItemPenilaianService().getItemPenilaian();
+    }
+
     return data.map((e) => ItemPenilaianModel.fromJson(e)).toList();
   }
 }
@@ -485,7 +489,6 @@ class ApiSupervisiService {
     required Map<int, int> jawaban,
   }) async {
     final token = await getToken();
-
     final response = await http.post(
       Uri.parse("$baseUrl/supervisi/simpan-jawaban"),
       headers: {
@@ -500,10 +503,17 @@ class ApiSupervisiService {
         }).toList(),
       }),
     );
+    final result = jsonDecode(response.body);
 
+    print(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200) {
+      print(response.body);
+      print(response.statusCode);
       return jsonDecode(response.body); // 🔥 PENTING
     } else {
+      print(response.body);
+      print(response.statusCode);
       throw Exception("Gagal kirim");
     }
   }
@@ -513,6 +523,7 @@ class ApiSupervisiService {
     required int idJadwal,
     required int nilai,
     required String tindakLanjut,
+    required String umpanBalik,
   }) async {
     final token = await getToken();
 
@@ -527,6 +538,7 @@ class ApiSupervisiService {
         "id_jadwal_supervisi": idJadwal, // 🔥 WAJIB
         "nilai": nilai,
         "kode_tindak_lanjut": tindakLanjut,
+        "umpan_balik": umpanBalik,
       }),
     );
   }

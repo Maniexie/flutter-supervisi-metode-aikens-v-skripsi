@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/supervisi/supervisi_home.dart';
 import 'package:supervisi/pages/supervisi/supervisi_list_guru.dart';
 import 'package:supervisi/services/api_service.dart';
 
@@ -208,7 +209,18 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Jadwal Supervisi")),
+      appBar: AppBar(
+        title: const Text("Jadwal Supervisi"),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SupervisiHomePage()),
+            ),
+            icon: const Icon(Icons.back_hand),
+          ),
+        ],
+      ),
 
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

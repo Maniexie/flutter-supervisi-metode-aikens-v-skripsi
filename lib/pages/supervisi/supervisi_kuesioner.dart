@@ -51,6 +51,19 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
     }
   }
 
+  Map<String, List<ItemPenilaianModel>> groupByKategori() {
+    Map<String, List<ItemPenilaianModel>> grouped = {};
+
+    for (var item in supervisiItems) {
+      if (!grouped.containsKey(item.namaKategori)) {
+        grouped[item.namaKategori] = [];
+      }
+      grouped[item.namaKategori]!.add(item);
+    }
+
+    return grouped;
+  }
+
   void submitJawaban() async {
     if (jawaban.length != supervisiItems.length) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -71,10 +84,11 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
         context,
         MaterialPageRoute(
           builder: (context) => SupervisiHasilTindakLanjutPage(
-            totalNilai: result['total_nilai'],
+            totalNilai: (result['nilai_akhir'] as num).toDouble(),
             tindakLanjut: result['tindak_lanjut'],
             guruId: widget.idGuru,
             idJadwal: widget.idJadwal,
+            umpanBalik: result['umpan_balik'] ?? '',
           ),
         ),
       );
@@ -102,64 +116,97 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
           if (supervisiItems.isEmpty) {
             return const Center(child: Text("Tidak ada data supervisi"));
           }
+          final grouped = groupByKategori();
+          return Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: grouped.entries.map((entry) {
+                    String kategori = entry.key;
+                    List<ItemPenilaianModel> items = entry.value;
 
-          return ListView.builder(
-            itemCount: supervisiItems.length,
-            itemBuilder: (context, index) {
-              final item = supervisiItems[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.pernyataan,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 🔥 HEADER KATEGORI
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text(
+                            kategori,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
 
-                      // 🔥 PILIHAN NILAI
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(5, (i) {
-                          int nilai = i + 1;
+                        // 🔥 LIST ITEM DALAM KATEGORI
+                        ...items.map((item) {
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.pernyataan,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
 
-                          return Row(
-                            children: [
-                              Radio<int>(
-                                value: nilai,
-                                groupValue: jawaban[item.id],
-                                onChanged: (val) {
-                                  setState(() {
-                                    jawaban[item.id] = val!;
-                                  });
-                                },
+                                  const SizedBox(height: 10),
+
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(5, (i) {
+                                      int nilai = i + 1;
+
+                                      return Row(
+                                        children: [
+                                          Radio<int>(
+                                            value: nilai,
+                                            groupValue: jawaban[item.id],
+                                            onChanged: (val) {
+                                              setState(() {
+                                                jawaban[item.id] = val!;
+                                              });
+                                            },
+                                          ),
+                                          Text("$nilai"),
+                                        ],
+                                      );
+                                    }),
+                                  ),
+                                ],
                               ),
-                              Text("$nilai"),
-                            ],
+                            ),
                           );
-                        }),
-                      ),
-                      const SizedBox(height: 8),
+                        }).toList(),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
 
-                      // 🔥 BUTTON SIMPAN
-                      ElevatedButton(
-                        onPressed: submitJawaban,
-                        child: const Text(
-                          "Submit",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                        ),
-                      ),
-                    ],
+              // 🔥 SUBMIT
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: submitJawaban,
+                    child: const Text("Submit"),
                   ),
                 ),
-              );
-            },
+              ),
+            ],
           );
         },
       ),

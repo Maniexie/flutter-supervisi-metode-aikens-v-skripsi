@@ -1,6 +1,7 @@
 class ItemPenilaianModel {
   final int id;
   final String kodeKategori;
+  final String namaKategori;
   final String pernyataan;
   final int versi;
   final double nilaiAiken;
@@ -10,6 +11,7 @@ class ItemPenilaianModel {
   ItemPenilaianModel({
     required this.id,
     required this.kodeKategori,
+    required this.namaKategori,
     required this.pernyataan,
     required this.versi,
     required this.nilaiAiken,
@@ -21,6 +23,7 @@ class ItemPenilaianModel {
     return ItemPenilaianModel(
       id: int.tryParse(json['id_item_penilaian'].toString()) ?? 0,
       kodeKategori: json['kode_kategori_penilaian']?.toString() ?? '-',
+      namaKategori: json['nama_kategori_penilaian'] ?? '-', // 🔥 INI
       pernyataan: json['pernyataan']?.toString() ?? '-',
       versi: int.tryParse(json['versi'].toString()) ?? 0,
       nilaiAiken: double.tryParse(json['nilai_aiken'].toString()) ?? 0.0,

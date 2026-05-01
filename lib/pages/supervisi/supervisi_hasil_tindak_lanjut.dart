@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:supervisi/pages/supervisi/supervisi_home.dart';
-import 'package:supervisi/pages/supervisi/supervisi_jadwal.dart';
 import 'package:supervisi/pages/supervisi/supervisi_list_guru.dart';
 import 'package:supervisi/services/api_service.dart';
 
 class SupervisiHasilTindakLanjutPage extends StatefulWidget {
-  final int totalNilai;
+  final double totalNilai;
   final String tindakLanjut;
   final int guruId;
   final int idJadwal;
+  final String umpanBalik;
 
   const SupervisiHasilTindakLanjutPage({
     super.key,
@@ -16,6 +15,7 @@ class SupervisiHasilTindakLanjutPage extends StatefulWidget {
     required this.tindakLanjut,
     required this.guruId,
     required this.idJadwal,
+    required this.umpanBalik,
   });
 
   @override
@@ -132,9 +132,10 @@ class _SupervisiHasilTindakLanjutPageState
                   : () async {
                       await ApiSupervisiService().simpanHasilSupervisi(
                         guruId: widget.guruId,
-                        nilai: widget.totalNilai,
+                        nilai: widget.totalNilai.toInt(),
                         tindakLanjut: selectedTindakLanjut!,
                         idJadwal: widget.idJadwal, // 🔥 TAMBAH INI
+                        umpanBalik: widget.umpanBalik,
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(

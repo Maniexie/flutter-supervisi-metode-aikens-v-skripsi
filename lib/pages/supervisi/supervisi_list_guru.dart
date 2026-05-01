@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/supervisi/supervisi_kuesioner.dart';
+import 'package:supervisi/pages/supervisi/supervisi_jadwal.dart';
 import 'package:supervisi/services/api_service.dart';
 
 class SupervisiListGuruPage extends StatefulWidget {
@@ -237,6 +238,13 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => SupervisiJadwalPage()),
+          ),
+        ),
         title: Text(namaPeriode.isEmpty ? "Loading..." : namaPeriode),
         actions: [
           IconButton(
