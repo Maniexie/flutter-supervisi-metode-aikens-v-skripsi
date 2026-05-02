@@ -211,6 +211,10 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Jadwal Supervisi"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           IconButton(
             onPressed: () => Navigator.push(

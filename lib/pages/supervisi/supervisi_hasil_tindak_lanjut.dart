@@ -37,7 +37,7 @@ class _SupervisiHasilTindakLanjutPageState
 
   Future<void> loadTindakLanjut() async {
     try {
-      final res = await ApiKodeTindakLanjutHasilSupervisiService()
+      final res = await ApiTindakLanjutHasilSupervisiService()
           .getKodeTindakLanjutHasilSupervisi();
 
       setState(() {

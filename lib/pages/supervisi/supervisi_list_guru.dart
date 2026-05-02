@@ -239,11 +239,8 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => SupervisiJadwalPage()),
-          ),
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(namaPeriode.isEmpty ? "Loading..." : namaPeriode),
         actions: [

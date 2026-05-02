@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/supervisi/daftar_guru/daftar_guru_list.dart';
+import 'package:supervisi/pages/supervisi/supervisi_daftar_tindak_lanjut.dart';
 import 'package:supervisi/pages/supervisi/supervisi_jadwal.dart';
 import 'package:supervisi/services/api_service.dart';
 
@@ -188,12 +189,26 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
               },
             ),
           ),
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.assignment_turned_in),
+              title: Text("Daftar Tindak Lanjut Supervisi"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SupervisiDaftarTindakLanjutPage(),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: showTambahJadwalDialog,
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: showTambahJadwalDialog,
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }

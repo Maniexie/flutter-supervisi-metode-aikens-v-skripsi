@@ -663,7 +663,7 @@ class ApiSupervisiService {
   }
 }
 
-class ApiKodeTindakLanjutHasilSupervisiService {
+class ApiTindakLanjutHasilSupervisiService {
   Future<List<dynamic>> getKodeTindakLanjutHasilSupervisi() async {
     final response = await http.get(
       Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi"),
@@ -676,4 +676,38 @@ class ApiKodeTindakLanjutHasilSupervisiService {
       throw Exception("Gagal load data");
     }
   }
+
+  Future<void> deleteTindakLanjut(String kode) async {
+  await http.delete(
+    Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi/$kode"),
+  );
+}
+
+Future<void> updateTindakLanjut({
+  required String kode,
+  required String nama,
+}) async {
+  await http.put(
+    Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi/$kode"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "nama_tindak_lanjut": nama,
+    }),
+  );
+}
+
+Future<void> createTindakLanjut({
+  required String kode,
+  required String nama,
+}) async {
+  await http.post(
+    Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "kode_tindak_lanjut": kode,
+      "nama_tindak_lanjut": nama,
+    }),
+  );
+}
+
 }
