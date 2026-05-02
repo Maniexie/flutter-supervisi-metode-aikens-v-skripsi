@@ -13,18 +13,50 @@ class DaftarGuruListPage extends StatefulWidget {
 class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
   List<GuruModel> guruList = [];
   bool isLoading = true;
-  String? selectedJenisKelamin;
-  List kodeJabatanList = [];
-  List kodeGolonganList = [];
-  List kodeStatusList = [];
 
-  String role = "guru";
-  bool isValidator = false;
-  String? selectedJabatan;
-  String? selectedGolongan;
-  String? selectedStatus;
+  List<Map<String, dynamic>> kodeJabatanList = [];
+  List<Map<String, dynamic>> kodeGolonganList = [];
+  List<Map<String, dynamic>> kodeStatusList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadGuru();
+    loadMasterData();
+  }
+
+  Future<void> loadGuru() async {
+    try {
+      final data = await ApiGuruService().getGuru();
+      setState(() {
+        guruList = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      debugPrint("Error loadGuru: $e");
+    }
+  }
+
+  Future<void> loadMasterData() async {
+    try {
+      final jabatan = await ApiKodeJabatanService().getAllKodeJabatan();
+      final golongan = await ApiKodeGolonganService().getAllKodeGolongan();
+      final status = await ApiKodeStatusPegawaiService()
+          .getAllKodeStatusPegawai();
+
+      setState(() {
+        kodeJabatanList = List<Map<String, dynamic>>.from(jabatan);
+        kodeGolonganList = List<Map<String, dynamic>>.from(golongan);
+        kodeStatusList = List<Map<String, dynamic>>.from(status);
+      });
+    } catch (e) {
+      debugPrint("Error loadMasterData: $e");
+    }
+  }
 
   void showTambahGuru() {
+    final formKey = GlobalKey<FormState>();
+
     final nama = TextEditingController();
     final email = TextEditingController();
     final password = TextEditingController();
@@ -34,11 +66,8 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
     final username = TextEditingController();
 
     String role = "guru";
-    String? selectedJenisKelamin = "laki-laki";
+    String selectedJenisKelamin = "laki-laki";
     bool isValidator = false;
-    String? selectedJabatan;
-    String? selectedGolongan;
-    String? selectedStatus;
 
     showDialog(
       context: context,
@@ -48,147 +77,109 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
             return AlertDialog(
               title: const Text("Tambah Guru"),
               content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: nama,
-                      decoration: const InputDecoration(labelText: "Nama"),
-                    ),
-                    TextField(
-                      controller: email,
-                      decoration: const InputDecoration(labelText: "Email"),
-                    ),
-                    TextField(
-                      controller: username,
-                      decoration: const InputDecoration(labelText: "username"),
-                    ),
-                    TextField(
-                      controller: password,
-                      decoration: const InputDecoration(labelText: "Password"),
-                    ),
-                    TextField(
-                      controller: nip,
-                      decoration: const InputDecoration(labelText: "NIP"),
-                    ),
-                    DropdownButtonFormField<String>(
-                      value: selectedJabatan,
-                      decoration: const InputDecoration(labelText: "Jabatan"),
-                      items: kodeJabatanList.map<DropdownMenuItem<String>>((
-                        item,
-                      ) {
-                        return DropdownMenuItem(
-                          value: item['kode_jabatan'],
-                          child: Text(item['nama_jabatan']),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setStateDialog(() {
-                          selectedJabatan = value;
-                        });
-                      },
-                    ),
-                    DropdownButtonFormField<String>(
-                      value: selectedGolongan,
-                      decoration: const InputDecoration(labelText: "Golongan"),
-                      items: kodeGolonganList.map<DropdownMenuItem<String>>((
-                        item,
-                      ) {
-                        return DropdownMenuItem(
-                          value: item['kode_golongan'],
-                          child: Text(item['nama_golongan']),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setStateDialog(() {
-                          selectedJabatan = value;
-                        });
-                      },
-                    ),
-                    DropdownButtonFormField<String>(
-                      value: selectedStatus,
-                      decoration: const InputDecoration(
-                        labelText: "Status Pegawai",
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: nama,
+                        decoration: const InputDecoration(labelText: "Nama"),
+                        validator: (v) =>
+                            v!.isEmpty ? "Tidak boleh kosong" : null,
                       ),
-                      items: kodeStatusList.map<DropdownMenuItem<String>>((
-                        item,
-                      ) {
-                        return DropdownMenuItem(
-                          value: item['kode_status_pegawai'],
-                          child: Text(item['nama_status_pegawai']),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setStateDialog(() {
-                          selectedJabatan = value;
-                        });
-                      },
-                    ),
-                    TextField(
-                      controller: hp,
-                      decoration: const InputDecoration(labelText: "No HP"),
-                    ),
-                    TextField(
-                      controller: alamat,
-                      decoration: const InputDecoration(labelText: "Alamat"),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // 🔥 ROLE
-                    DropdownButtonFormField(
-                      value: role,
-                      items: ["guru", "operator"].map((e) {
-                        return DropdownMenuItem(value: e, child: Text(e));
-                      }).toList(),
-                      onChanged: (value) {
-                        setStateDialog(() {
-                          selectedJabatan = value;
-                        });
-                      },
-                      decoration: const InputDecoration(labelText: "Role"),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // 🔥 JENIS KELAMIN
-                    DropdownButtonFormField<String>(
-                      value: selectedJenisKelamin,
-                      decoration: const InputDecoration(
-                        labelText: "Jenis Kelamin",
+                      TextFormField(
+                        controller: email,
+                        decoration: const InputDecoration(labelText: "Email"),
+                      ),
+                      TextFormField(
+                        controller: username,
+                        decoration: const InputDecoration(
+                          labelText: "Username",
+                        ),
+                      ),
+                      TextFormField(
+                        controller: password,
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                        ),
+                        obscureText: true,
+                      ),
+                      TextFormField(
+                        controller: nip,
+                        decoration: const InputDecoration(labelText: "NIP"),
                       ),
 
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'laki-laki',
-                          child: Text('Laki-laki'),
+                      /// 🔥 JABATAN
+
+                      /// 🔥 GOLONGAN
+
+                      /// 🔥 STATUS
+                      TextFormField(
+                        controller: hp,
+                        decoration: const InputDecoration(labelText: "No HP"),
+                      ),
+                      TextFormField(
+                        controller: alamat,
+                        decoration: const InputDecoration(labelText: "Alamat"),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      /// 🔥 ROLE
+                      DropdownButtonFormField<String>(
+                        value: role,
+                        items: ["guru", "operator", "kepala_sekolah"]
+                            .map(
+                              (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          setStateDialog(() {
+                            role = value!;
+                          });
+                        },
+                        decoration: const InputDecoration(labelText: "Role"),
+                      ),
+
+                      /// 🔥 JENIS KELAMIN
+                      DropdownButtonFormField<String>(
+                        value: selectedJenisKelamin,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'laki-laki',
+                            child: Text('Laki-laki'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'perempuan',
+                            child: Text('Perempuan'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setStateDialog(() {
+                            selectedJenisKelamin = value!;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          labelText: "Jenis Kelamin",
                         ),
-                        DropdownMenuItem(
-                          value: 'perempuan',
-                          child: Text('Perempuan'),
-                        ),
-                      ],
+                      ),
 
-                      onChanged: (value) {
-                        setStateDialog(() {
-                          selectedJabatan = value;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // 🔥 VALIDATOR SWITCH
-                    SwitchListTile(
-                      title: const Text("Sebagai Validator"),
-                      value: isValidator,
-                      onChanged: (val) {
-                        setStateDialog(() => isValidator = val);
-                      },
-                    ),
-                  ],
+                      /// 🔥 VALIDATOR
+                      SwitchListTile(
+                        title: const Text("Sebagai Validator"),
+                        value: isValidator,
+                        onChanged: (val) {
+                          setStateDialog(() {
+                            isValidator = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
+              /// 🔥 ACTION BUTTON
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -196,15 +187,7 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (selectedJabatan == null ||
-                        selectedGolongan == null ||
-                        selectedStatus == null ||
-                        selectedJenisKelamin == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Lengkapi semua data")),
-                      );
-                      return;
-                    }
+                    if (!formKey.currentState!.validate()) return;
 
                     try {
                       await ApiGuruService().tambahGuru(
@@ -218,10 +201,6 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
                         role: role,
                         jenisKelamin: selectedJenisKelamin,
                         isValidator: isValidator,
-
-                        kodeJabatan: selectedJabatan,
-                        kodeGolongan: selectedGolongan,
-                        kodeStatusPegawai: selectedStatus,
                       );
 
                       Navigator.pop(context);
@@ -247,46 +226,9 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    loadGuru();
-    loadMasterData();
-  }
-
-  Future<void> loadGuru() async {
-    try {
-      final data = await ApiGuruService().getGuru();
-      setState(() {
-        guruList = data;
-        isLoading = false;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> loadMasterData() async {
-    try {
-      final jabatan = await ApiKodeJabatanService().getAllKodeJabatan();
-      final golongan = await ApiKodeGolonganService().getAllKodeGolongan();
-      final status = await ApiKodeStatusPegawaiService()
-          .getAllKodeStatusPegawai();
-
-      setState(() {
-        kodeJabatanList = jabatan;
-        kodeGolonganList = golongan;
-        kodeStatusList = status;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Daftar Guru")),
-
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -303,30 +245,24 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
                     leading: CircleAvatar(
                       backgroundColor: Colors.blue,
                       child: Text(
-                        guru.nama != null && guru.nama!.isNotEmpty
-                            ? guru.nama![0]
-                            : "?",
+                        (guru.nama?.isNotEmpty ?? false) ? guru.nama![0] : "?",
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
-
                     title: Text(guru.nama ?? "-"),
-
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("NIP: ${guru.nip ?? '-'}"),
-                        Text("Email: ${guru.email}"),
-                        Text("HP: ${guru.nomorHp}"),
-                        Text("Role: ${guru.role}"),
+                        Text("Email: ${guru.email ?? '-'}"),
+                        Text("HP: ${guru.nomorHp ?? '-'}"),
+                        Text("Role: ${guru.role ?? '-'}"),
                       ],
                     ),
-
                     trailing: Icon(
                       Icons.verified,
                       color: guru.isValidator ? Colors.green : Colors.grey,
                     ),
-
                     onTap: () {
                       Navigator.push(
                         context,
@@ -340,8 +276,8 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
         onPressed: showTambahGuru,
+        child: const Icon(Icons.add),
       ),
     );
   }

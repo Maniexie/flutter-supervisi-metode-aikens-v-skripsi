@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/dashboard.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/supervisi/daftar_guru/daftar_guru_list.dart';
 import 'package:supervisi/pages/supervisi/supervisi_daftar_tindak_lanjut.dart';
@@ -155,7 +156,16 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("")),
+      appBar: AppBar(
+        title: Text("Supervisi Home"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => DashboardPage()),
+          ),
+        ),
+      ),
 
       body: ListView(
         padding: EdgeInsets.all(16),

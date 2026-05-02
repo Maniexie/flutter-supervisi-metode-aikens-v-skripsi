@@ -32,6 +32,10 @@ class ApiLoginService {
 
     final json = jsonDecode(response.body);
 
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
+    print("JSON: $json");
+
     if (response.statusCode == 200) {
       return json; // 🔥 langsung return semua
     } else {
@@ -113,14 +117,26 @@ class ApiGuruService {
     String? token = prefs.getString('token');
 
     final response = await http.get(
-      Uri.parse("$baseUrl/guru"), // 🔥 endpoint list guru
+      Uri.parse("$baseUrl/guru"),
       headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
     );
 
-    print(response.body);
+    print("RESPONSE GURU: ${response.body}");
 
     if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
+
+      /// 🔥 HANDLE 2 KEMUNGKINAN FORMAT API
+      List data;
+
+      if (decoded is List) {
+        data = decoded;
+      } else if (decoded is Map && decoded.containsKey('data')) {
+        data = decoded['data'];
+      } else {
+        throw Exception("Format response tidak dikenali");
+      }
+
       return data.map((e) => GuruModel.fromJson(e)).toList();
     } else {
       throw Exception("Gagal load guru");
@@ -177,11 +193,6 @@ class ApiGuruService {
     required String role,
     required bool isValidator,
     required String jenisKelamin,
-
-    // 🔥 TAMBAHAN
-    required String kodeJabatan,
-    required String kodeGolongan,
-    required String kodeStatusPegawai,
   }) async {
     final response = await http.post(
       Uri.parse("$baseUrl/guru"),
@@ -200,11 +211,6 @@ class ApiGuruService {
         'jenis_kelamin': jenisKelamin,
         'role': role,
         'isValidator': isValidator,
-
-        // 🔥 DINAMIS
-        'kode_jabatan': kodeJabatan,
-        'kode_golongan': kodeGolongan,
-        'kode_status_pegawai': kodeStatusPegawai,
       }),
     );
 
@@ -389,22 +395,50 @@ class ApiItemPenilaianService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
+
+      /// 🔥 pastikan selalu Map
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      } else {
+        return {};
+      }
     } else {
       throw Exception('Gagal ambil data');
     }
   }
 
   Future<List<ItemPenilaianModel>> getItemUntukSupervisi() async {
-    final res = await ApiItemPenilaianService().getItemDigunakan();
+    try {
+      final res = await getItemDigunakan();
 
-    List data = res['data'];
+      print("RAW RESPONSE: $res");
 
-    if (data.isEmpty) {
-      data = await ApiItemPenilaianService().getItemPenilaian();
+      List data = [];
+
+      /// 🔥 VALIDASI SUPER AMAN
+      if (res != null &&
+          res is Map<String, dynamic> &&
+          res['data'] != null &&
+          res['data'] is List) {
+        data = List.from(res['data']); // 🔥 pakai List.from biar aman
+      }
+
+      /// 🔥 JIKA KOSONG → fallback
+      if (data.isEmpty) {
+        print("PAKAI FALLBACK");
+        return await getItemPenilaian();
+      }
+
+      /// 🔥 PARSING AMAN
+      return data
+          .where((e) => e != null)
+          .map((e) => ItemPenilaianModel.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    } catch (e) {
+      print("ERROR getItemUntukSupervisi: $e");
+      return [];
     }
-
-    return data.map((e) => ItemPenilaianModel.fromJson(e)).toList();
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/supervisi/supervisi_home.dart';
 import 'package:supervisi/pages/supervisi/supervisi_list_guru.dart';
 import 'package:supervisi/services/api_service.dart';
 
@@ -212,7 +213,10 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
         title: const Text("Jadwal Supervisi"),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => SupervisiHomePage()),
+          ),
         ),
       ),
 

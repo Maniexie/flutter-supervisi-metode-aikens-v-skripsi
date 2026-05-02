@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/supervisi/supervisi_hasil_tindak_lanjut.dart';
 import 'package:supervisi/services/api_service.dart';
+import 'package:supervisi/widgets/drawer.dart';
 
 class SupervisiKuesionerPage extends StatefulWidget {
   final int idGuru;
@@ -102,7 +103,15 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Supervisi Kuesioner")),
+      appBar: AppBar(
+        title: const Text("Supervisi Kuesioner"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Builder(
         builder: (context) {
           if (isLoading) {

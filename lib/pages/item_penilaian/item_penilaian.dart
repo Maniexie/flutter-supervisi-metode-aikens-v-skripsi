@@ -23,6 +23,27 @@ String formatStatus(String status) {
   }
 }
 
+Widget _buildEmptyState() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.inbox, size: 80, color: Colors.grey[400]),
+        const SizedBox(height: 16),
+        const Text(
+          "Data Item Penilaian Kosong",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "Silakan tambahkan data baru",
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+      ],
+    ),
+  );
+}
+
 class _ItemPenilaianState extends State<ItemPenilaian> {
   List<ItemPenilaianModel> kategoriList = [];
   String? selectedKategori;
@@ -48,6 +69,10 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
         items = data;
         isLoading = false;
         print(data.first.isDigunakan);
+
+        if (data.isNotEmpty) {
+          print(data.first.isDigunakan);
+        }
       });
     } catch (e) {
       print(e);
@@ -450,7 +475,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : items.isEmpty
-          ? const Center(child: Text("Data kosong"))
+          ? _buildEmptyState()
           : ListView.separated(
               padding: const EdgeInsets.all(12),
               itemCount: items.length,
@@ -471,19 +496,16 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                       ),
                     ],
                   ),
-
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
                     ),
-
                     title: Text(
                       item.pernyataan,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -491,7 +513,6 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                           "Kategori: ${item.kodeKategori} | V: ${item.nilaiAiken} | Versi: ${item.versi}",
                         ),
                         const SizedBox(height: 6),
-
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
@@ -514,7 +535,6 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                         ),
                       ],
                     ),
-
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -528,12 +548,12 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
 
                                 setState(() {
                                   item.isDigunakan = newValue;
-                                  print(item.isDigunakan);
                                 });
-                                await loadTotalDigunakan(); // 🔥 update count
+
+                                await loadTotalDigunakan();
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Gagal update")),
+                                  const SnackBar(content: Text("Gagal update")),
                                 );
                               }
                             },
