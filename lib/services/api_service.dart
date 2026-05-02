@@ -165,6 +165,55 @@ class ApiGuruService {
       throw Exception("Gagal load statistik");
     }
   }
+
+  Future<void> tambahGuru({
+    required String nama,
+    required String email,
+    required String password,
+    required String nip,
+    required String username,
+    required String nomorHp,
+    required String alamat,
+    required String role,
+    required bool isValidator,
+    required String jenisKelamin,
+
+    // 🔥 TAMBAHAN
+    required String kodeJabatan,
+    required String kodeGolongan,
+    required String kodeStatusPegawai,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/guru"),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'nama': nama,
+        'email': email,
+        'password': password,
+        'nip': nip,
+        'username': username,
+        'nomor_hp': nomorHp,
+        'alamat': alamat,
+        'jenis_kelamin': jenisKelamin,
+        'role': role,
+        'isValidator': isValidator,
+
+        // 🔥 DINAMIS
+        'kode_jabatan': kodeJabatan,
+        'kode_golongan': kodeGolongan,
+        'kode_status_pegawai': kodeStatusPegawai,
+      }),
+    );
+
+    print(response.body);
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception("Gagal tambah guru");
+    }
+  }
 }
 
 // ================ KATEGORI PENILAIAN ================
@@ -678,36 +727,257 @@ class ApiTindakLanjutHasilSupervisiService {
   }
 
   Future<void> deleteTindakLanjut(String kode) async {
-  await http.delete(
-    Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi/$kode"),
-  );
+    await http.delete(
+      Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi/$kode"),
+    );
+  }
+
+  Future<void> updateTindakLanjut({
+    required String kode,
+    required String nama,
+  }) async {
+    await http.put(
+      Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi/$kode"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"nama_tindak_lanjut": nama}),
+    );
+  }
+
+  Future<void> createTindakLanjut({
+    required String kode,
+    required String nama,
+  }) async {
+    await http.post(
+      Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "kode_tindak_lanjut": kode,
+        "nama_tindak_lanjut": nama,
+      }),
+    );
+  }
 }
 
-Future<void> updateTindakLanjut({
-  required String kode,
-  required String nama,
-}) async {
-  await http.put(
-    Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi/$kode"),
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({
-      "nama_tindak_lanjut": nama,
-    }),
-  );
+class ApiKodeGolonganService {
+  Future<List<dynamic>> getAllKodeGolongan() async {
+    final response = await http.get(Uri.parse("$baseUrl/kode-golongan"));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> getKodeGolonganByKode(String kode) async {
+    final response = await http.get(Uri.parse("$baseUrl/kode-golongan/$kode"));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> createKodeGolongan({
+    required String kode,
+    required String nama,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/kode-golongan"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"kode_golongan": kode, "nama_golongan": nama}),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> updateKodeGolongan({
+    required String kode,
+    required String nama,
+  }) async {
+    final response = await http.put(
+      Uri.parse("$baseUrl/kode-golongan/$kode"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"nama_golongan": nama}),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> deleteKodeGolongan(String kode) async {
+    final response = await http.delete(
+      Uri.parse("$baseUrl/kode-golongan/$kode"),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
 }
 
-Future<void> createTindakLanjut({
-  required String kode,
-  required String nama,
-}) async {
-  await http.post(
-    Uri.parse("$baseUrl/kode-tindak-lanjut-hasil-supervisi"),
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({
-      "kode_tindak_lanjut": kode,
-      "nama_tindak_lanjut": nama,
-    }),
-  );
+class ApiKodeJabatanService {
+  Future<List<dynamic>> getAllKodeJabatan() async {
+    final response = await http.get(Uri.parse("$baseUrl/kode-jabatan"));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> getKodeJabatanByKode(String kode) async {
+    final response = await http.get(Uri.parse("$baseUrl/kode-jabatan/$kode"));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> createKodeJabatan({
+    required String kode,
+    required String nama,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/kode-jabatan"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"kode_jabatan": kode, "nama_jabatan": nama}),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> updateKodeJabatan({
+    required String kode,
+    required String nama,
+  }) async {
+    final response = await http.put(
+      Uri.parse("$baseUrl/kode-jabatan/$kode"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"nama_jabatan": nama}),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> deleteKodeJabatan(String kode) async {
+    final response = await http.delete(
+      Uri.parse("$baseUrl/kode-jabatan/$kode"),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
 }
 
+class ApiKodeStatusPegawaiService {
+  Future<List<dynamic>> getAllKodeStatusPegawai() async {
+    final response = await http.get(Uri.parse("$baseUrl/kode-status-pegawai"));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> getKodeStatusPegawaiByKode(String kode) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/kode-status-pegawai/$kode"),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> createKodeStatusPegawai({
+    required String kode,
+    required String nama,
+  }) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/kode-status-pegawai"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "kode_status_pegawai": kode,
+        "nama_status_pegawai": nama,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> updateKodeStatusPegawai({
+    required String kode,
+    required String nama,
+  }) async {
+    final response = await http.put(
+      Uri.parse("$baseUrl/kode-status-pegawai/$kode"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"nama_status_pegawai": nama}),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> deleteKodeStatusPegawai(String kode) async {
+    final response = await http.delete(
+      Uri.parse("$baseUrl/kode-status-pegawai/$kode"),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
 }

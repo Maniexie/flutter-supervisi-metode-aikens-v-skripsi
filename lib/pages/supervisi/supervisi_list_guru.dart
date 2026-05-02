@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/supervisi/supervisi_kuesioner.dart';
-import 'package:supervisi/pages/supervisi/supervisi_jadwal.dart';
 import 'package:supervisi/services/api_service.dart';
 
 class SupervisiListGuruPage extends StatefulWidget {

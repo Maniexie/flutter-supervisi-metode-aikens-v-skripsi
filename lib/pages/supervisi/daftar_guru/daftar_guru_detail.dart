@@ -17,6 +17,19 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
   List statistik = [];
   bool isLoadingChart = true;
 
+  String getRoleLabel(String role) {
+    switch (role) {
+      case "guru":
+        return "Guru";
+      case "kepala_sekolah":
+        return "Kepala Sekolah";
+      case "operator":
+        return "Operator";
+      default:
+        return "-";
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -100,6 +113,10 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
               child: Column(
                 children: [
                   ListTile(
+                    leading: const Icon(Icons.person),
+                    title: Text(widget.guru.username ?? "-"),
+                  ),
+                  ListTile(
                     leading: const Icon(Icons.email),
                     title: Text(widget.guru.email),
                   ),
@@ -113,12 +130,22 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
                   ),
                   ListTile(
                     leading: const Icon(Icons.person),
-                    title: Text("Role: ${widget.guru.role}"),
+                    title: Text("Role: ${getRoleLabel(widget.guru.role!)}"),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.verified),
+                    leading: Icon(
+                      Icons.verified,
+                      color:
+                          (widget.guru.isValidator == true ||
+                              widget.guru.isValidator == "Validator")
+                          ? Colors.green
+                          : const Color.fromARGB(255, 201, 201, 201),
+                    ),
                     title: Text(
-                      widget.guru.isValidator ? "Validator" : "Bukan Validator",
+                      (widget.guru.isValidator == true ||
+                              widget.guru.isValidator == "Validator")
+                          ? "Validator"
+                          : "-",
                     ),
                   ),
                 ],
@@ -128,65 +155,55 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
             const SizedBox(height: 20),
 
             // 📊 CHART STATISTIK
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    const Text(
-                      "Statistik Supervisi",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+            SizedBox(
+              height: 300,
+              child: LineChart(
+                LineChartData(
+                  gridData: FlGridData(show: true),
+                  borderData: FlBorderData(show: true),
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 1,
+                        getTitlesWidget: (value, meta) {
+                          int index = value.toInt();
+
+                          if (index >= 0 && index < statistik.length) {
+                            return Text(
+                              statistik[index]['nama_periode'],
+                              style: const TextStyle(fontSize: 10),
+                            );
+                          }
+                          return const Text('');
+                        },
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: true),
+                    ),
+                  ),
 
-                    isLoadingChart
-                        ? const CircularProgressIndicator()
-                        : SizedBox(
-                            height: 300,
-                            child: BarChart(
-                              BarChartData(
-                                alignment: BarChartAlignment.spaceAround,
-                                barGroups: statistik.asMap().entries.map((e) {
-                                  int index = e.key + 1;
-                                  var item = e.value;
+                  lineBarsData: [
+                    LineChartBarData(
+                      isCurved: true,
+                      barWidth: 2,
+                      dotData: FlDotData(show: true),
+                      spots: statistik.asMap().entries.map((e) {
+                        int index = e.key;
 
-                                  double nilai =
-                                      double.tryParse(
-                                        item['total_nilai'].toString(),
-                                      ) ??
-                                      0;
+                        double nilai =
+                            double.tryParse(
+                              e.value['total_nilai'].toString(),
+                            ) ??
+                            0;
 
-                                  return BarChartGroupData(
-                                    x: index,
-                                    barRods: [BarChartRodData(toY: nilai)],
-                                  );
-                                }).toList(),
-                                titlesData: FlTitlesData(
-                                  bottomTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      getTitlesWidget: (value, meta) {
-                                        int index = value.toInt();
-                                        if (index < statistik.length) {
-                                          return Text(
-                                            statistik[index]['nama_periode'],
-                                          );
-                                        }
-                                        return const Text('');
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                        return FlSpot(index.toDouble(), nilai);
+                      }).toList(),
+                    ),
                   ],
+                  minY: 0,
+                  maxY: 100,
                 ),
               ),
             ),
