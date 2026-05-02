@@ -443,6 +443,45 @@ class ApiItemPenilaianService {
 }
 
 class ApiAikenService {
+  Future<List<ItemPenilaianModel>> fetchInvalidItems() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/item-penilaian/invalid'),
+    );
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body)['data'];
+
+      // Filter di sini sebelum dikembalikan ke UI
+      return jsonResponse
+          .map((item) => ItemPenilaianModel.fromJson(item))
+          .where((item) => item.status == 'tidak_valid')
+          .toList();
+    } else {
+      throw Exception('Gagal memuat data');
+    }
+  }
+
+  Future<List<dynamic>> getItemTidakValidGroup() async {
+    final res = await http.get(
+      Uri.parse("$baseUrl/item-penilaian/tidak-valid-group"),
+    );
+
+    print("res.body: ${res.body}['data']");
+    print(res);
+
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
+
+      if (decoded is Map && decoded['data'] is List) {
+        return decoded['data'];
+      }
+
+      return [];
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
   // 🔥 GET LIST VERSI
   Future<List<int>> getVersiList() async {
     final response = await http.get(

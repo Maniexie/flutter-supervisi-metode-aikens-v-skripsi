@@ -65,17 +65,23 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
   Future<void> loadData() async {
     try {
       final data = await ApiItemPenilaianService().getItemPenilaian();
+
       setState(() {
         items = data;
         isLoading = false;
-        print(data.first.isDigunakan);
-
-        if (data.isNotEmpty) {
-          print(data.first.isDigunakan);
-        }
       });
+
+      /// 🔥 pindahkan ke luar setState + cek kosong
+      if (data.isNotEmpty) {
+        print(data.first.isDigunakan);
+      }
     } catch (e) {
-      print(e);
+      print("ERROR loadData: $e");
+
+      /// 🔥 WAJIB biar loading berhenti
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -106,16 +112,12 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
-            // 🔥 LOAD DATA SAAT DIALOG DIBUKA
-            if (!sudahLoad) {
-              sudahLoad = true;
-              ApiKategoriPenilaianService().getKategoriPenilaian().then((data) {
-                setStateDialog(() {
-                  kategoriList = data;
-                  isLoadingKategori = false;
-                });
+            ApiKategoriPenilaianService().getKategoriPenilaian().then((data) {
+              setStateDialog(() {
+                kategoriList = data;
+                isLoadingKategori = false;
               });
-            }
+            });
             return AlertDialog(
               title: const Text("Tambah Item Penilaian"),
 

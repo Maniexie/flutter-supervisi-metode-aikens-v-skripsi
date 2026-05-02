@@ -145,7 +145,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue,
+                              color: Colors.red,
                             ),
                           ),
                         ),
@@ -162,6 +162,10 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Text(item.namaKategori),
+
+                                  const SizedBox(height: 10),
+                                  // 🔥 PERNYATAAN
                                   Text(
                                     item.pernyataan,
                                     style: const TextStyle(
