@@ -1054,3 +1054,48 @@ class ApiKodeStatusPegawaiService {
     }
   }
 }
+
+class ApiHasilSupervisiService {
+  Future<List<dynamic>> getHasilSupervisi() async {
+    final response = await http.get(Uri.parse("$baseUrl/hasil-supervisi"));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<void> getHasilSupervisiById(String id) async {
+    final response = await http.get(Uri.parse("$baseUrl/hasil-supervisi/$id"));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['data']; // ✅ sekarang benar
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+
+  Future<Map<String, dynamic>> getDetailByJadwalGuru(
+    int idJadwal,
+    int idGuru,
+  ) async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/hasil-supervisi/jadwal/$idJadwal/guru/$idGuru"),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+
+      if (json['data'] != null) {
+        return json['data'];
+      }
+
+      return {};
+    } else {
+      throw Exception("Gagal load data");
+    }
+  }
+}

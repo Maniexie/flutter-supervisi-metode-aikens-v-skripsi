@@ -25,6 +25,7 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
   void initState() {
     super.initState();
     loadDetail();
+    // loadGetHasilSupervisiById();
   }
 
   Future<void> loadDetail() async {
@@ -42,6 +43,20 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
       print(e);
     }
   }
+
+  // Future<void> loadGetHasilSupervisiById() async {
+  //   try {
+  //     final res = await ApiHasilSupervisiService().getHasilSupervisiById(
+  //       widget.item['id_jadwal_supervisi'],
+  //     );
+  //     setState(() {
+  //       detail = res;
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +96,14 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  Text(
+                    "nilai: ${item['total_nilai']}",
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    "Tindak Lanjut: ${item['kode_tindak_lanjut']} | ${item['nama_tindak_lanjut']}",
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ],
               ),
