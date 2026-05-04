@@ -132,9 +132,9 @@ class _SupervisiHasilTindakLanjutPageState
                   : () async {
                       await ApiSupervisiService().simpanHasilSupervisi(
                         guruId: widget.guruId,
-                        nilai: widget.totalNilai.toInt(),
+                        nilai: widget.totalNilai,
                         tindakLanjut: selectedTindakLanjut!,
-                        idJadwal: widget.idJadwal, // 🔥 TAMBAH INI
+                        idJadwal: widget.idJadwal,
                         umpanBalik: widget.umpanBalik,
                       );
 

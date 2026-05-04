@@ -13,6 +13,8 @@ class _AikenHomePageState extends State<AikenHomePage> {
   final service = ApiAikenService();
   final serviceJawaban = JawabanValidatorService();
 
+  final datNil = 'data-nil';
+
   late Future<List<dynamic>> futureAll;
 
   @override
@@ -45,6 +47,26 @@ class _AikenHomePageState extends State<AikenHomePage> {
 
           final versiList = snapshot.data![0] as List<int>;
           final versiSudahDijawab = snapshot.data![1] as List<int>;
+
+          if (versiList.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(
+                    Icons.assignment_late_outlined,
+                    size: 80,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "Data Aiken tidak tersedia",
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
+          }
 
           print("VERSI: $versiList");
           print("SUDAH: $versiSudahDijawab");

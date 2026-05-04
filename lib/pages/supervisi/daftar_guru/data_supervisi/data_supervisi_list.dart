@@ -44,7 +44,19 @@ class _DataSupervisiListPageState extends State<DataSupervisiListPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : data.isEmpty
-          ? const Center(child: Text("Belum ada supervisi"))
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.assignment, size: 50, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Belum Ada Daftar Riwayat Supervisi atau Data Supervisi Kosong",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            )
           : ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {

@@ -643,7 +643,7 @@ class ApiSupervisiService {
   Future<void> simpanHasilSupervisi({
     required int guruId,
     required int idJadwal,
-    required int nilai,
+    required double nilai,
     required String tindakLanjut,
     required String umpanBalik,
   }) async {

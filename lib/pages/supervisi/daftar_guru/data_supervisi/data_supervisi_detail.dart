@@ -44,20 +44,6 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
     }
   }
 
-  // Future<void> loadGetHasilSupervisiById() async {
-  //   try {
-  //     final res = await ApiHasilSupervisiService().getHasilSupervisiById(
-  //       widget.item['id_jadwal_supervisi'],
-  //     );
-  //     setState(() {
-  //       detail = res;
-  //       isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
@@ -98,7 +84,7 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
                     ),
                   ),
                   Text(
-                    "nilai: ${item['total_nilai']}",
+                    "nilai: ${item['nilai_akhir']}",
                     style: const TextStyle(color: Colors.white),
                   ),
                   Text(

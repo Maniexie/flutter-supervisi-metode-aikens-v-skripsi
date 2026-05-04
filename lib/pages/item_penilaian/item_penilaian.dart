@@ -128,7 +128,13 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                   isLoadingKategori
                       ? const CircularProgressIndicator()
                       : DropdownButtonFormField<String>(
-                          value: selectedKategori,
+                          value:
+                              kategoriList.any(
+                                (k) =>
+                                    k.kodeKategoriPenilaian == selectedKategori,
+                              )
+                              ? selectedKategori
+                              : null,
                           hint: const Text("Pilih Kategori"),
                           items: kategoriList.map((item) {
                             return DropdownMenuItem<String>(
@@ -261,6 +267,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
 
     bool isLoading = false;
     bool isLoadingKategori = true;
+    bool sudahLoad = false;
     List<KategoriPenilaianModel> kategoriList = [];
 
     showDialog(
@@ -582,14 +589,14 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
         mainAxisSize: MainAxisSize.min,
         children: [
           FloatingActionButton.extended(
-            heroTag: "add",
+            heroTag: "addItem",
             onPressed: tambahItem,
             icon: const Icon(Icons.add),
-            label: const Text("Item Penilaian"),
+            label: const Text("I"),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           FloatingActionButton.extended(
-            heroTag: "refresh",
+            heroTag: "addKategori",
             onPressed: () {
               Navigator.push(
                 context,
@@ -599,7 +606,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
               );
             },
             icon: const Icon(Icons.add),
-            label: const Text("Kategori Penilaian"),
+            label: const Text("K"),
             backgroundColor: Colors.green,
           ),
         ],

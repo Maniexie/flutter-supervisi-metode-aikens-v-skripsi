@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supervisi/pages/models/ItemPenilaianModel.dart';
 import 'package:supervisi/pages/supervisi/supervisi_hasil_tindak_lanjut.dart';
 import 'package:supervisi/services/api_service.dart';
-import 'package:supervisi/widgets/drawer.dart';
 
 class SupervisiKuesionerPage extends StatefulWidget {
   final int idGuru;
@@ -85,7 +84,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
         context,
         MaterialPageRoute(
           builder: (context) => SupervisiHasilTindakLanjutPage(
-            totalNilai: (result['nilai_akhir'] as num).toDouble(),
+            totalNilai: result['nilai'],
             tindakLanjut: result['tindak_lanjut'],
             guruId: widget.idGuru,
             idJadwal: widget.idJadwal,
@@ -138,17 +137,17 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // 🔥 HEADER KATEGORI
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            kategori,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.all(12),
+                        //   child: Text(
+                        //     kategori,
+                        //     style: const TextStyle(
+                        //       fontSize: 18,
+                        //       fontWeight: FontWeight.bold,
+                        //       color: Colors.red,
+                        //     ),
+                        //   ),
+                        // ),
 
                         // 🔥 LIST ITEM DALAM KATEGORI
                         ...items.map((item) {
@@ -162,9 +161,21 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(item.namaKategori),
-
-                                  const SizedBox(height: 10),
+                                  Text(
+                                    item.namaKategori,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      backgroundColor: Color.fromARGB(
+                                        255,
+                                        248,
+                                        211,
+                                        211,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 1),
                                   // 🔥 PERNYATAAN
                                   Text(
                                     item.pernyataan,
@@ -173,7 +184,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
                                     ),
                                   ),
 
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 2),
 
                                   Row(
                                     mainAxisAlignment:

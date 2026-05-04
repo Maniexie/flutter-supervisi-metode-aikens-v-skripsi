@@ -223,7 +223,23 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : jadwalList.isEmpty
-          ? const Center(child: Text("Belum ada jadwal"))
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.assignment_turned_in_rounded,
+                    size: 50,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Belum Ada Daftar Jadwal Supervisi",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            )
           : ListView.builder(
               itemCount: jadwalList.length,
               itemBuilder: (context, index) {

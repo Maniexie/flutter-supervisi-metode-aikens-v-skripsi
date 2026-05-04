@@ -119,57 +119,57 @@ class _SupervisiDaftarTindakLanjutPageState
   }
 
   void showTambahDialog() {
-  final kodeController = TextEditingController();
-  final namaController = TextEditingController();
+    final kodeController = TextEditingController();
+    final namaController = TextEditingController();
 
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      title: const Text("Tambah Tindak Lanjut"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: kodeController,
-            decoration: const InputDecoration(labelText: "Kode"),
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Tambah Tindak Lanjut"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: kodeController,
+              decoration: const InputDecoration(labelText: "Kode"),
+            ),
+            TextField(
+              controller: namaController,
+              decoration: const InputDecoration(labelText: "Nama"),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
           ),
-          TextField(
-            controller: namaController,
-            decoration: const InputDecoration(labelText: "Nama"),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await ApiTindakLanjutHasilSupervisiService().createTindakLanjut(
+                  kode: kodeController.text,
+                  nama: namaController.text,
+                );
+
+                Navigator.pop(context);
+                loadDaftarTindakLanjut();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Berhasil ditambahkan")),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("Gagal: $e")));
+              }
+            },
+            child: const Text("Simpan"),
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Batal"),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            try {
-              await ApiTindakLanjutHasilSupervisiService().createTindakLanjut(
-                kode: kodeController.text,
-                nama: namaController.text,
-              );
-
-              Navigator.pop(context);
-              loadDaftarTindakLanjut();
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Berhasil ditambahkan")),
-              );
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Gagal: $e")),
-              );
-            }
-          },
-          child: const Text("Simpan"),
-        ),
-      ],
-    ),
-  );
-}
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +178,19 @@ class _SupervisiDaftarTindakLanjutPageState
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : tindakLanjutList.isEmpty
-          ? const Center(child: Text("Belum ada data"))
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.assignment, size: 50, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text(
+                    "Belum Ada Daftar Tindak Lanjut Supervisi",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            )
           : ListView.builder(
               itemCount: tindakLanjutList.length,
               itemBuilder: (context, index) {

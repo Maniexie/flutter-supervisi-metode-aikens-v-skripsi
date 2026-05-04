@@ -205,7 +205,19 @@ class _KategoriPenilaianHomePageState extends State<KategoriPenilaianHomePage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : kategoriList.isEmpty
-          ? const Center(child: Text("Data kosong"))
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.inbox, size: 80, color: Colors.grey),
+                  Text(
+                    "Belum ada kategori penilaian",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  Text("Silahkan tambah terlebih dahulu"),
+                ],
+              ),
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: kategoriList.length,
