@@ -52,12 +52,16 @@ class ApiLoginService {
     String token,
     String role,
     bool isValidator,
+    String nama,
+    String nip,
   ) async {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString('token', token);
     await prefs.setString('role', role);
     await prefs.setBool('isValidator', isValidator);
+    await prefs.setString('nama', nama);
+    await prefs.setString('nip', nip);
   }
 
   static Future<String?> getRole() async {

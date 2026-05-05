@@ -31,7 +31,7 @@ class _AikenHomePageState extends State<AikenHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Kuesioner Aiken's V"),
+        title: const Text("Daftar Kuesioner Aiken's V"),
         centerTitle: true,
       ),
       body: FutureBuilder<List<dynamic>>(

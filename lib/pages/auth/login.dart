@@ -72,10 +72,15 @@ class _LoginPageState extends State<LoginPage> {
                             final role = result['user']['role'];
                             final isValidator = result['user']['isValidator'];
 
+                            final nama = result['user']['nama'] ?? 'No Name';
+                            final nip = result['user']['nip'] ?? 'No NIP';
+
                             await ApiLoginService.saveLoginData(
                               token,
                               role,
                               isValidator,
+                              nama,
+                              nip,
                             );
 
                             Navigator.pushReplacementNamed(
