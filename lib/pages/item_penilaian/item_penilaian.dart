@@ -97,6 +97,121 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
     }
   }
 
+  Future<void> showItemDigunakanDialog() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final res = await ApiItemPenilaianService().getItemDigunakan();
+      Navigator.pop(context); // tutup loading
+
+      final List data = res['data'] ?? [];
+      final List kategori = (res['perKategori'] as List?) ?? [];
+
+      // ListView.builder(
+      //   itemCount: kategori.length,
+      //   itemBuilder: (context, index) {
+      //     final k = kategori[index];
+
+      //     return ListTile(
+      //       title: Text(k['nama_kategori_penilaian']),
+      //       trailing: Text("${k['total']} item"),
+      //     );
+      //   },
+      // );
+      // print(res['perKategori'] ?? []);
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text(
+            "Item Digunakan",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          titlePadding: const EdgeInsets.all(16),
+          titleTextStyle: const TextStyle(fontWeight: FontWeight.bold),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: data.isEmpty
+                ? const Text("Tidak ada item digunakan")
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: data.length,
+                    itemBuilder: (_, i) {
+                      final item = data[i];
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 🔢 NOMOR BULAT
+                            Container(
+                              width: 30,
+                              height: 30,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Text(
+                                "${i + 1}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            // 📄 CONTENT
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item['nama_kategori_penilaian'] ?? '-',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    item['pernyataan'] ?? '-',
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   void tambahItem() {
     TextEditingController pernyataanController = TextEditingController();
@@ -471,9 +586,22 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
-                  "$totalDigunakan Item",
-                  style: const TextStyle(color: Colors.white),
+                child: InkWell(
+                  onTap: showItemDigunakanDialog,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
+                    child: Text(
+                      "$totalDigunakan Items",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -549,7 +677,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                       children: [
                         if (item.status == "valid")
                           Switch(
-                            value: item.isDigunakan,
+                            value: item.isDigunakan ?? false,
                             onChanged: (value) async {
                               try {
                                 final newValue = await ApiItemPenilaianService()
@@ -559,6 +687,7 @@ class _ItemPenilaianState extends State<ItemPenilaian> {
                                   item.isDigunakan = newValue;
                                 });
 
+                                await loadData(); // 🔥 reload dari server
                                 await loadTotalDigunakan();
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(

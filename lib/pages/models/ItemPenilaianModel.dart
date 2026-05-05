@@ -21,7 +21,7 @@ class ItemPenilaianModel {
 
   factory ItemPenilaianModel.fromJson(Map<String, dynamic> json) {
     return ItemPenilaianModel(
-      id: int.tryParse(json['id_item_penilaian'].toString()) ?? 0,
+      id: json['id_item_penilaian'] ?? 0,
       kodeKategori: json['kode_kategori_penilaian']?.toString() ?? '-',
       namaKategori: json['nama_kategori_penilaian'] ?? '-', // 🔥 INI
       pernyataan: json['pernyataan']?.toString() ?? '-',

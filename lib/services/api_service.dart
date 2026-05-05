@@ -374,13 +374,15 @@ class ApiItemPenilaianService {
   }
 
   Future<bool> toggleDigunakan(int id) async {
-    final token = await getToken();
+    // final token = await getToken();
 
     final response = await http.post(
       Uri.parse("$baseUrl/item-penilaian/toggle/$id"),
-      headers: {"Authorization": "Bearer $token", "Accept": "application/json"},
     );
 
+    print(response.statusCode);
+    print(response.body);
+    print("JSON ITEM: $json");
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       return json['isDigunakan'];
