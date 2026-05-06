@@ -3,6 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:supervisi/pages/models/GuruModel.dart';
 import 'package:supervisi/pages/supervisi/daftar_guru/data_supervisi/data_supervisi_list.dart';
 import 'package:supervisi/services/api_service.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:open_file/open_file.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart'; // 🔥 penting (kIsWeb)
+import 'dart:html' as html;
+
+import 'package:flutter/foundation.dart'; // kIsWeb
 
 class DaftarGuruDetailPage extends StatefulWidget {
   final GuruModel guru;
@@ -64,6 +73,119 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
       });
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<void> downloadDataPdf() async {
+    try {
+      String url = "$baseUrl/download-supervisi-pdf/${widget.guru.id}";
+
+      // 🌐 ================= WEB =================
+      if (kIsWeb) {
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute(
+            "download",
+            "laporan_supervisi_${widget.guru.nama}.pdf",
+          )
+          ..click();
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Download PDF dimulai")));
+
+        return;
+      }
+
+      // 📱 ================= MOBILE =================
+      var status = await Permission.storage.request();
+
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Izin storage ditolak")));
+        return;
+      }
+
+      // loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final dir = await getExternalStorageDirectory();
+      final filePath = "${dir!.path}/laporan_supervisi_${widget.guru.nama}.pdf";
+
+      await Dio().download(url, filePath);
+
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Download berhasil")));
+
+      OpenFile.open(filePath);
+    } catch (e) {
+      print("ERROR: $e");
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal download: $e")));
+    }
+  }
+
+  Future<void> downloadData() async {
+    try {
+      String url =
+          "http://localhost:8000/api/download-supervisi-pdf/${widget.guru.id}";
+
+      // 🌐 ================= WEB =================
+      if (kIsWeb) {
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute("download", "supervisi_${widget.guru.nama}.pdf")
+          ..click();
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Download dimulai")));
+
+        return;
+      }
+
+      // 📱 ================= MOBILE =================
+      var status = await Permission.storage.request();
+
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Izin storage ditolak")));
+        return;
+      }
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final dir = await getExternalStorageDirectory();
+      final filePath = "${dir!.path}/supervisi_${widget.guru.nama}.csv";
+
+      await Dio().download(url, filePath);
+
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Download berhasil")));
+
+      OpenFile.open(filePath);
+    } catch (e) {
+      print("ERROR: $e");
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal download: $e")));
     }
   }
 
@@ -281,13 +403,14 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.download),
-                    title: Text("Download Data Supervisi"),
-                  ),
-                ],
+              child: ListTile(
+                leading: const Icon(Icons.download, color: Colors.green),
+                title: const Text("Download Data Supervisi"),
+                subtitle: const Text("Export ke PDF / Excel"),
+                trailing: const Icon(Icons.arrow_downward),
+                onTap: () {
+                  downloadDataPdf(); // 🔥 panggil function
+                },
               ),
             ),
           ],
