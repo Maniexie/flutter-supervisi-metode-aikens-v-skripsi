@@ -30,6 +30,7 @@ class _DataSupervisiListPageState extends State<DataSupervisiListPage> {
       setState(() {
         data = res;
         isLoading = false;
+        print(" load data - data $data");
       });
     } catch (e) {
       print(e);
@@ -69,7 +70,7 @@ class _DataSupervisiListPageState extends State<DataSupervisiListPage> {
                     title: Text("${item['nama_periode']}"),
                     subtitle: Text(
                       " Mulai: ${item['tanggal_mulai']}"
-                      " - Selesai: ${item['tanggal_selesai']} | Nilai: ${item['total_nilai']}",
+                      " - Selesai: ${item['tanggal_selesai']}",
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios),
 

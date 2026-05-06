@@ -18,6 +18,19 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
   List<Map<String, dynamic>> kodeGolonganList = [];
   List<Map<String, dynamic>> kodeStatusList = [];
 
+  String getRoleLabel(String role) {
+    switch (role) {
+      case "guru":
+        return "Guru";
+      case "kepala_sekolah":
+        return "Kepala Sekolah";
+      case "operator":
+        return "Operator";
+      default:
+        return "-";
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -127,7 +140,7 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
 
                       /// 🔥 ROLE
                       DropdownButtonFormField<String>(
-                        value: role,
+                        value: getRoleLabel(role),
                         items: ["guru", "operator", "kepala_sekolah"]
                             .map(
                               (e) => DropdownMenuItem(value: e, child: Text(e)),

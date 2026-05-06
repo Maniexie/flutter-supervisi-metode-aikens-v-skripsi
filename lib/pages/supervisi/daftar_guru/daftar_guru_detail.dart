@@ -17,6 +17,8 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
   List statistik = [];
   bool isLoadingChart = true;
 
+  List chartData = [];
+
   String getRoleLabel(String role) {
     switch (role) {
       case "guru":
@@ -33,7 +35,23 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
   @override
   void initState() {
     super.initState();
+    loadChart();
     loadStatistik();
+  }
+
+  Future<void> loadChart() async {
+    try {
+      final res = await ApiGuruService().getLineChartSupervisi(widget.guru.id);
+
+      setState(() {
+        chartData = res;
+        isLoadingChart = false;
+      });
+
+      print(chartData); // debug
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> loadStatistik() async {
@@ -151,64 +169,6 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
                 ],
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            // 📊 CHART STATISTIK
-            SizedBox(
-              height: 300,
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(show: true),
-                  borderData: FlBorderData(show: true),
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 1,
-                        getTitlesWidget: (value, meta) {
-                          int index = value.toInt();
-
-                          if (index >= 0 && index < statistik.length) {
-                            return Text(
-                              statistik[index]['nama_periode'],
-                              style: const TextStyle(fontSize: 10),
-                            );
-                          }
-                          return const Text('');
-                        },
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-                  ),
-
-                  lineBarsData: [
-                    LineChartBarData(
-                      isCurved: true,
-                      barWidth: 2,
-                      dotData: FlDotData(show: true),
-                      spots: statistik.asMap().entries.map((e) {
-                        int index = e.key;
-
-                        double nilai =
-                            double.tryParse(
-                              e.value['total_nilai'].toString(),
-                            ) ??
-                            0;
-
-                        return FlSpot(index.toDouble(), nilai);
-                      }).toList(),
-                    ),
-                  ],
-                  minY: 0,
-                  maxY: 100,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
             // 🚀 MENU KE SUPERVISI
             Card(
               shape: RoundedRectangleBorder(
@@ -217,7 +177,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
               child: ListTile(
                 leading: const Icon(Icons.analytics, color: Colors.blue),
                 title: const Text("Riwayat Supervisi"),
-                subtitle: const Text("Lihat hasil supervisi guru ini"),
+                subtitle: const Text("Lihat hasil supervisi guru"),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   Navigator.push(
@@ -231,9 +191,109 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
                 },
               ),
             ),
+
+            const SizedBox(height: 20),
+
+            // 🔥 GRAFI K
+            SizedBox(
+              height: 250,
+              child: isLoadingChart
+                  ? const Center(child: CircularProgressIndicator())
+                  : chartData.isEmpty
+                  ? const Center(child: Text("Belum ada data supervisi"))
+                  : LineChart(
+                      LineChartData(
+                        minY: 0,
+                        maxY: 5, // sesuaikan nilai kamu
+
+                        gridData: FlGridData(show: true),
+                        borderData: FlBorderData(show: true),
+
+                        titlesData: FlTitlesData(
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: 1,
+                              reservedSize: 40,
+                              getTitlesWidget: (value, meta) {
+                                int index = value.toInt();
+
+                                if (index >= 0 && index < chartData.length) {
+                                  String label =
+                                      chartData[index]['nama_periode'] ?? '';
+
+                                  // 🔥 potong biar tidak panjang
+                                  if (label.length > 20) {
+                                    label = label.substring(0, 8);
+                                  }
+
+                                  return Transform.rotate(
+                                    angle: -0.3,
+                                    child: Text(
+                                      label,
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                  );
+                                }
+
+                                return const SizedBox();
+                              },
+                            ),
+                          ),
+
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: 20,
+                            ),
+                          ),
+                        ),
+
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: List.generate(chartData.length, (index) {
+                              double nilai =
+                                  double.tryParse(
+                                    chartData[index]['nilai'].toString(),
+                                  ) ??
+                                  0;
+
+                              return FlSpot(index.toDouble(), nilai);
+                            }),
+
+                            isCurved: true,
+                            color: Colors.blue,
+                            barWidth: 4,
+                            dotData: FlDotData(show: true),
+
+                            belowBarData: BarAreaData(
+                              show: true,
+                              color: Colors.blue.withOpacity(0.2),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+
+            // const SizedBox(height: 20),
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.download),
+                    title: Text("Download Data Supervisi"),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
+
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

@@ -170,6 +170,7 @@ class ApiGuruService {
     );
 
     final json = jsonDecode(res.body);
+    print(json['data']);
     return json['data'];
   }
 
@@ -185,6 +186,33 @@ class ApiGuruService {
       throw Exception("Gagal load statistik");
     }
   }
+
+  Future<List<dynamic>> getLineChartSupervisi(int guruId) async {
+  final res = await http.get(
+    Uri.parse("$baseUrl/hasil-supervisi/guru/line-chart/$guruId"),
+  );
+
+  if (res.statusCode == 200) {
+    final json = jsonDecode(res.body);
+    return json['data'] ?? [];
+  } else {
+    throw Exception("Gagal ambil data chart");
+  }
+}
+
+  // Future<List<dynamic>> getStatistikGuru(int guruId) async {
+  //   final res = await http.get(
+  //     Uri.parse("$baseUrl/supervisi/statistik-guru/$guruId"),
+  //   );
+
+  //   if (res.statusCode == 200) {
+  //     final json = jsonDecode(res.body);
+
+  //     return json['data'] ?? [];
+  //   } else {
+  //     throw Exception("Gagal load statistik");
+  //   }
+  // }
 
   Future<void> tambahGuru({
     required String nama,

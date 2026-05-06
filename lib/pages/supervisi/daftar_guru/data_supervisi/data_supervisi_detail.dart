@@ -1,5 +1,5 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:supervisi/pages/supervisi/daftar_guru/data_supervisi/data_supervisi_riwayat.dart';
 import 'package:supervisi/services/api_service.dart';
 
 class DataSupervisiDetailPage extends StatefulWidget {
@@ -19,11 +19,16 @@ class DataSupervisiDetailPage extends StatefulWidget {
 
 class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
   List detail = [];
+  int idJadwalSupervisi = 1;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    print("DATA SUPERVISI DETAIL PAGE INIT STATE");
+    print("guruId: ${widget.guruId}");
+    print("idJadwalSupervisi: ${widget.item['id_jadwal_supervisi']}");
+    print(" init state - detail $detail");
     loadDetail();
     // loadGetHasilSupervisiById();
   }
@@ -34,10 +39,16 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
         widget.item['id_jadwal_supervisi'],
         widget.guruId,
       );
+      print("DATA SUPERVISI DETAIL PAGE LOAD DETAIL");
+      print("guruId: ${widget.guruId}");
+      print("idJadwalSupervisi: ${widget.item['id_jadwal_supervisi']}");
+      print(" load detail - detail $detail");
 
       setState(() {
         detail = res;
+        idJadwalSupervisi = widget.item['id_jadwal_supervisi'];
         isLoading = false;
+        print(" load detail - set state - detail $detail");
       });
     } catch (e) {
       print(e);
@@ -48,7 +59,7 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
   Widget build(BuildContext context) {
     final item = widget.item;
 
-    double totalNilai = double.tryParse(item['total_nilai'].toString()) ?? 0;
+    // double nilaiAkhir = double.tryParse(item['nilai_akhir'].toString()) ?? 0;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Detail Supervisi")),
@@ -68,20 +79,16 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    "Jadwal Supervisi: ${item['nama_periode']}",
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  Text(
                     "Mulai: ${item['tanggal_mulai']}",
                     style: const TextStyle(color: Colors.white),
                   ),
                   Text(
                     "Selesai: ${item['tanggal_selesai']}",
                     style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    "Total Nilai: $totalNilai",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                   Text(
                     "nilai: ${item['nilai_akhir']}",
@@ -98,44 +105,65 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
             const SizedBox(height: 20),
 
             // 📊 CHART
-            SizedBox(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [BarChartRodData(toY: totalNilai)],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // SizedBox(
+            //   height: 250,
+            //   child: LineChart(
+            //     LineChartData(
+            //       minY: 0,
+            //       maxY: 5, // sesuaikan skala nilai supervisi kamu
 
+            //       gridData: FlGridData(show: true),
+            //       borderData: FlBorderData(show: true),
+
+            //       titlesData: FlTitlesData(
+            //         bottomTitles: AxisTitles(
+            //           sideTitles: SideTitles(
+            //             showTitles: true,
+            //             interval: 1,
+            //             getTitlesWidget: (value, meta) {
+            //               // hanya 1 titik (karena 1 supervisi)
+            //               if (value == 0) {
+            //                 return const Text("Nilai");
+            //               }
+            //               return const SizedBox();
+            //             },
+            //           ),
+            //         ),
+            //         leftTitles: AxisTitles(
+            //           sideTitles: SideTitles(showTitles: true),
+            //         ),
+            //       ),
+
+            //       lineBarsData: [
+            //         LineChartBarData(
+            //           spots: [
+            //             FlSpot(0, nilaiAkhir), // 👈 data utama kamu
+            //           ],
+            //           isCurved: true,
+            //           color: Colors.blue,
+            //           barWidth: 4,
+            //           dotData: FlDotData(show: true),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 20),
-
-            // 📋 DETAIL LIST
-            isLoading
-                ? const CircularProgressIndicator()
-                : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: detail.length,
-                    itemBuilder: (context, index) {
-                      final d = detail[index];
-
-                      return Card(
-                        child: ListTile(
-                          leading: const Icon(Icons.check),
-                          title: Text(
-                            "Item Penilaian: ${d['id_item_penilaian']}",
-                          ),
-                          trailing: Text("${d['jawaban']}"),
-                        ),
-                      );
-                    },
-                  ),
+            // Card(
+            //   child: ListTile(
+            //     leading: const Icon(Icons.history),
+            //     title: Text("Riwayat Kuesioner Penilaian"),
+            //     onTap: () => Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (_) => DataSupervisiRiwayatPage(
+            //           idJadwalSupervisi: idJadwalSupervisi,
+            //           guruId: widget.guruId,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
