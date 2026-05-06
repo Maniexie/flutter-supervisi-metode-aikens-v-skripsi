@@ -216,6 +216,7 @@ class _AikenKuesionerPageState extends State<AikenKuesionerPage> {
                               kategori,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -237,20 +238,29 @@ class _AikenKuesionerPageState extends State<AikenKuesionerPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
+                                        textAlign: TextAlign.justify,
                                         item["pernyataan"],
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w600,
+                                          fontSize: 14,
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
+                                      const SizedBox(height: 3),
                                       Wrap(
-                                        spacing: 6,
+                                        spacing: 3,
                                         children: skala.map((s) {
                                           final selected =
                                               item["nilai"] == s["value"];
 
                                           return ChoiceChip(
-                                            label: Text(s["label"]),
+                                            label: Text(
+                                              s["label"],
+                                              style: TextStyle(
+                                                color: selected
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
                                             selected: selected,
                                             onSelected: (_) {
                                               setState(() {

@@ -25,7 +25,7 @@ class _AikenDetailPageState extends State<AikenDetailPage> {
 
   String _tanggalIndonesia() {
     final now = DateTime.now();
-    return DateFormat.yMMMEd('id_ID').format(now);
+    return DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(now);
   }
 
   @override
@@ -36,7 +36,9 @@ class _AikenDetailPageState extends State<AikenDetailPage> {
 
     namaController = TextEditingController();
     nipController = TextEditingController();
-    tanggalController = TextEditingController(text: _tanggalIndonesia());
+    tanggalController = TextEditingController(
+      text: _tanggalIndonesia(),
+    ); // ✅ BENAR
   }
 
   void _loadUser() async {
