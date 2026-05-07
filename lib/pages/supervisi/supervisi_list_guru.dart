@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supervisi/pages/supervisi/supervisi_jadwal.dart';
 import 'package:supervisi/pages/supervisi/supervisi_kuesioner.dart';
 import 'package:supervisi/services/api_service.dart';
-import 'package:supervisi/widgets/drawer.dart';
 
 class SupervisiListGuruPage extends StatefulWidget {
   final int idJadwal;
@@ -17,6 +16,7 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
   List guruList = [];
   bool isLoading = true;
 
+  String role = '';
   String namaPeriode = '';
   String deskripsi = '';
   DateTime? tanggalMulai;
@@ -47,7 +47,16 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
   @override
   void initState() {
     super.initState();
+    loadRole();
     loadData();
+  }
+
+  Future<void> loadRole() async {
+    final roleLogin = await ApiLoginService.getRole();
+
+    setState(() {
+      role = roleLogin ?? '';
+    });
   }
 
   // ================= LOAD DATA =================
@@ -82,10 +91,25 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
 
   // ================= NAVIGASI =================
   void goToKuesioner(int idGuru, bool sudah) async {
+    // 🔥 VALIDASI ROLE
+    if (role != 'kepala_sekolah') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Akses ditolak. Hanya kepala sekolah yang dapat melakukan supervisi.",
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      return;
+    }
+
     if (sudah) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Guru sudah disupervisi")));
+
       return;
     }
 

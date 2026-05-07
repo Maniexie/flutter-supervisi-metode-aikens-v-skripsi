@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supervisi/pages/aiken/aiken_home.dart';
 import 'package:supervisi/pages/guru/DashboardGuruPage.dart';
+import 'package:supervisi/pages/guru/SupervisiGuruHomePage.dart';
 
 import 'package:supervisi/pages/item_penilaian/item_penilaian.dart';
 import 'package:supervisi/pages/home.dart';
@@ -87,18 +88,23 @@ class _DashboardPageState extends State<DashboardPage> {
     } else if (role == 'guru') {
       pages = [
         DashboardGuruPage(),
-        SupervisiHomePage(),
+        SupervisiGuruHomePage(),
         if (isValidator) AikenHomePage(),
         ProfilePage(),
       ];
 
-      titles = ["Dashboard", "Supervisi", if (isValidator) "Aiken", "Profile"];
+      titles = [
+        "Dashboard",
+        "Supervisi Guru",
+        if (isValidator) "Aiken",
+        "Profile",
+      ];
 
       navItems = [
         const NavigationDestination(icon: Icon(Icons.home), label: 'Dashboard'),
         const NavigationDestination(
           icon: Icon(Icons.assignment_add),
-          label: 'Supervisi',
+          label: 'Supervisi Guru',
         ),
         if (isValidator)
           const NavigationDestination(

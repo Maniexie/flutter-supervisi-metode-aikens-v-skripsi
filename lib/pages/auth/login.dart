@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                               usernameController.text,
                               passwordController.text,
                             );
-
+                            final id_user = result['user']['id_user'];
                             final token = result['token'];
                             final role = result['user']['role'];
                             final isValidator = result['user']['isValidator'];
@@ -76,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                             final nip = result['user']['nip'] ?? 'No NIP';
 
                             await ApiLoginService.saveLoginData(
+                              id_user,
                               token,
                               role,
                               isValidator,

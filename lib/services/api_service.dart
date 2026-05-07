@@ -49,6 +49,7 @@ class ApiLoginService {
   }
 
   static Future<void> saveLoginData(
+    int idUser,
     String token,
     String role,
     bool isValidator,
@@ -56,12 +57,17 @@ class ApiLoginService {
     String nip,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-
+    await prefs.setInt('id_user', idUser);
     await prefs.setString('token', token);
     await prefs.setString('role', role);
     await prefs.setBool('isValidator', isValidator);
     await prefs.setString('nama', nama);
     await prefs.setString('nip', nip);
+  }
+
+  static Future<int?> getIdUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('id_user');
   }
 
   static Future<String?> getRole() async {
@@ -188,17 +194,17 @@ class ApiGuruService {
   }
 
   Future<List<dynamic>> getLineChartSupervisi(int guruId) async {
-  final res = await http.get(
-    Uri.parse("$baseUrl/hasil-supervisi/guru/line-chart/$guruId"),
-  );
+    final res = await http.get(
+      Uri.parse("$baseUrl/hasil-supervisi/guru/line-chart/$guruId"),
+    );
 
-  if (res.statusCode == 200) {
-    final json = jsonDecode(res.body);
-    return json['data'] ?? [];
-  } else {
-    throw Exception("Gagal ambil data chart");
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body);
+      return json['data'] ?? [];
+    } else {
+      throw Exception("Gagal ambil data chart");
+    }
   }
-}
 
   // Future<List<dynamic>> getStatistikGuru(int guruId) async {
   //   final res = await http.get(
@@ -1131,5 +1137,25 @@ class ApiHasilSupervisiService {
     } else {
       throw Exception("Gagal load data");
     }
+  }
+}
+
+class ApiJadwalSupervisiService {
+  static Future<List<dynamic>> getJadwalGuru() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    int? idUser = prefs.getInt('id_user');
+    String? token = prefs.getString('token');
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/jadwal-supervisi-guru/$idUser"),
+      headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    return [];
   }
 }
