@@ -10,7 +10,6 @@ import 'package:open_file/open_file.dart';
 import 'package:flutter/foundation.dart'; // 🔥 penting (kIsWeb)
 import 'dart:html' as html;
 
-
 class DaftarGuruDetailPage extends StatefulWidget {
   final GuruModel guru;
 
@@ -83,7 +82,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
         final anchor = html.AnchorElement(href: url)
           ..setAttribute(
             "download",
-            "laporan_supervisi_${widget.guru.nama}.pdf",
+            "laporan_observasi_kelas_${widget.guru.nama}.pdf",
           )
           ..click();
 
@@ -112,7 +111,8 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
       );
 
       final dir = await getExternalStorageDirectory();
-      final filePath = "${dir!.path}/laporan_supervisi_${widget.guru.nama}.pdf";
+      final filePath =
+          "${dir!.path}/laporan_observasi_kelas_${widget.guru.nama}.pdf";
 
       await Dio().download(url, filePath);
 
@@ -296,8 +296,8 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
               ),
               child: ListTile(
                 leading: const Icon(Icons.analytics, color: Colors.blue),
-                title: const Text("Riwayat Supervisi"),
-                subtitle: const Text("Lihat hasil supervisi guru"),
+                title: const Text("Riwayat Observasi Kelas"),
+                subtitle: const Text("Lihat hasil observasi kelas"),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   Navigator.push(
@@ -314,9 +314,9 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
 
             const SizedBox(height: 20),
 
-            // 🔥 GRAFI K
+            // 🔥 GRAFIK
             SizedBox(
-              height: 250,
+              height: 250, // sesuaikan tinggi
               child: isLoadingChart
                   ? const Center(child: CircularProgressIndicator())
                   : chartData.isEmpty
@@ -324,7 +324,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
                   : LineChart(
                       LineChartData(
                         minY: 0,
-                        maxY: 5, // sesuaikan nilai kamu
+                        maxY: 100, // sesuaikan nilai kamu
 
                         gridData: FlGridData(show: true),
                         borderData: FlBorderData(show: true),
@@ -363,7 +363,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
 
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
-                              showTitles: true,
+                              showTitles: false,
                               interval: 20,
                             ),
                           ),
@@ -403,7 +403,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
               ),
               child: ListTile(
                 leading: const Icon(Icons.download, color: Colors.green),
-                title: const Text("Download Data Supervisi"),
+                title: const Text("Download Data Observasi Kelas"),
                 subtitle: const Text("Export ke PDF / Excel"),
                 trailing: const Icon(Icons.arrow_downward),
                 onTap: () {

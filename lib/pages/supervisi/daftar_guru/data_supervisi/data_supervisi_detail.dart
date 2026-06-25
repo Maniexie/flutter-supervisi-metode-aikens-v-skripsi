@@ -67,6 +67,10 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            Text(
+              "Hasil Rencana Tindak Lanjut",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
             // 🔵 HEADER
             Container(
               width: double.infinity,

@@ -45,7 +45,9 @@ class _DataSupervisiRiwayatPageState extends State<DataSupervisiRiwayatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Riwayat Supervisi HASIL KUISIONER")),
+      appBar: AppBar(
+        title: const Text("Riwayat Observasi Kelas HASIL KUISIONER"),
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : detail.isEmpty

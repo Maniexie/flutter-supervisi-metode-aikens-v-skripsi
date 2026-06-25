@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login Page")),
+      appBar: AppBar(title: Text("")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -30,7 +30,17 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.asset('assets/images/image.jpg', height: 100),
+                child: Image.asset('assets/images/logokampar.jpg', height: 100),
+                // child: Image.asset('assets/images/image1.jpg', height: 100),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Login",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
               TextFormField(
                 controller: usernameController,

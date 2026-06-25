@@ -16,6 +16,7 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
   List guruList = [];
   bool isLoading = true;
 
+  String namaGuru = '';
   String role = '';
   String namaPeriode = '';
   String deskripsi = '';
@@ -90,7 +91,7 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
   }
 
   // ================= NAVIGASI =================
-  void goToKuesioner(int idGuru, bool sudah) async {
+  void goToKuesioner(int idGuru, String namaGuru, bool sudah) async {
     // 🔥 VALIDASI ROLE
     if (role != 'kepala_sekolah') {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -116,8 +117,11 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            SupervisiKuesionerPage(idGuru: idGuru, idJadwal: widget.idJadwal),
+        builder: (_) => SupervisiKuesionerPage(
+          idGuru: idGuru,
+          idJadwal: widget.idJadwal,
+          namaGuru: namaGuru,
+        ),
       ),
     );
 
@@ -349,7 +353,11 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
                           ),
                           onTap: sudah
                               ? null
-                              : () => goToKuesioner(guru['id_guru'], sudah),
+                              : () => goToKuesioner(
+                                  guru['id_guru'],
+                                  guru['nama'],
+                                  sudah,
+                                ),
                         ),
                       );
                     },

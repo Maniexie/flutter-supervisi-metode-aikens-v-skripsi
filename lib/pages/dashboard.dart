@@ -25,6 +25,8 @@ class _DashboardPageState extends State<DashboardPage> {
   List<String> titles = [];
   List<NavigationDestination> navItems = [];
 
+  int idUser = 0;
+  String nama = '';
   String role = '';
   bool isValidator = false;
 
@@ -37,9 +39,13 @@ class _DashboardPageState extends State<DashboardPage> {
   void loadRole() async {
     final getRole = await ApiLoginService.getRole();
     final getIsValidator = await ApiLoginService.getIsValidator();
+    final getIdUser = await ApiLoginService.getIdUser();
+    final getNama = await ApiLoginService.getNama();
 
     setState(() {
       role = getRole ?? '';
+      idUser = getIdUser ?? 0;
+      nama = getNama ?? '';
       isValidator = getIsValidator;
       setupMenu();
     });
@@ -52,7 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     if (role == 'kepala_sekolah') {
       pages = [
-        HomePage(),
+        HomePage(idUser: idUser, nama: nama),
         SupervisiHomePage(),
         ItemPenilaian(),
         if (isValidator) AikenHomePage(),
@@ -115,7 +121,7 @@ class _DashboardPageState extends State<DashboardPage> {
       ];
     } else if (role == 'operator') {
       pages = [
-        HomePage(),
+        HomePage(idUser: idUser, nama: nama),
         SupervisiHomePage(),
         ItemPenilaian(),
         if (isValidator) AikenHomePage(),

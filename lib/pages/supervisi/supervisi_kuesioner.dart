@@ -6,12 +6,14 @@ import 'package:supervisi/services/api_service.dart';
 class SupervisiKuesionerPage extends StatefulWidget {
   final int idGuru;
   final int idJadwal;
+  final String namaGuru;
   final String? tindakLanjut;
   final int? nilai;
 
   const SupervisiKuesionerPage({
     super.key,
     required this.idGuru,
+    required this.namaGuru,
     required this.idJadwal,
     this.tindakLanjut,
     this.nilai,
@@ -75,6 +77,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
     try {
       final result = await ApiSupervisiService().submitSupervisi(
         idGuru: widget.idGuru,
+        namaGuru: widget.namaGuru,
         idJadwal: widget.idJadwal,
         jawaban: jawaban,
       );
@@ -87,6 +90,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
             totalNilai: result['nilai'],
             tindakLanjut: result['tindak_lanjut'],
             guruId: widget.idGuru,
+            namaGuru: widget.namaGuru ?? '',
             idJadwal: widget.idJadwal,
             umpanBalik: result['umpan_balik'] ?? '',
           ),
@@ -103,7 +107,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Supervisi Kuesioner"),
+        title: const Text("Kuesioner Observasi Kelas"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {

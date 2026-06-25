@@ -210,7 +210,7 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Jadwal Supervisi"),
+        title: const Text("Jadwal Observasi Kelas"),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.push(

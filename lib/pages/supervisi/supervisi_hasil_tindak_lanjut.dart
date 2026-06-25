@@ -6,6 +6,7 @@ class SupervisiHasilTindakLanjutPage extends StatefulWidget {
   final double totalNilai;
   final String tindakLanjut;
   final int guruId;
+  final String namaGuru;
   final int idJadwal;
   final String umpanBalik;
 
@@ -14,6 +15,7 @@ class SupervisiHasilTindakLanjutPage extends StatefulWidget {
     required this.totalNilai,
     required this.tindakLanjut,
     required this.guruId,
+    required this.namaGuru,
     required this.idJadwal,
     required this.umpanBalik,
   });
@@ -58,16 +60,16 @@ class _SupervisiHasilTindakLanjutPageState
   Widget build(BuildContext context) {
     Color warna;
 
-    if (widget.totalNilai <= 50) {
+    if (widget.totalNilai * 20 <= 50) {
       warna = Colors.red;
-    } else if (widget.totalNilai <= 75) {
+    } else if (widget.totalNilai * 20 <= 75) {
       warna = Colors.orange;
     } else {
       warna = Colors.green;
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Hasil Supervisi")),
+      appBar: AppBar(title: const Text("Hasil Observasi Kelas")),
 
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -83,14 +85,18 @@ class _SupervisiHasilTindakLanjutPageState
               ),
               child: Column(
                 children: [
-                  const Text(
-                    "Total Nilai",
-                    style: TextStyle(color: Colors.white),
+                  Text(
+                    "Nama ${widget.namaGuru}",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
-                    "${widget.totalNilai}",
+                    " Total Nilai : ${widget.totalNilai * 20}",
                     style: const TextStyle(
-                      fontSize: 32,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),

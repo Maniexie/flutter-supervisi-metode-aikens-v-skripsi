@@ -503,7 +503,7 @@ class _SupervisiGuruHomePageState extends State<SupervisiGuruHomePage> {
 
             // RIWAYAT SUPERVISI
             const Text(
-              "Riwayat Supervisi",
+              "Riwayat Observasi Kelas",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
@@ -615,7 +615,7 @@ class _SupervisiGuruHomePageState extends State<SupervisiGuruHomePage> {
 
                         icon: const Icon(Icons.visibility),
 
-                        label: const Text("Lihat Detail Supervisi"),
+                        label: const Text("Lihat Detail Supervisis"),
 
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.indigo,

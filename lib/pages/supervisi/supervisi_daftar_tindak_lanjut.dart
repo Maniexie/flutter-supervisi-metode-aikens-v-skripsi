@@ -191,46 +191,74 @@ class _SupervisiDaftarTindakLanjutPageState
                 ],
               ),
             )
-          : ListView.builder(
-              itemCount: tindakLanjutList.length,
-              itemBuilder: (context, index) {
-                final item = tindakLanjutList[index];
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  child: ListTile(
-                    leading: const Icon(Icons.assignment),
-
-                    title: Text(item['nama_tindak_lanjut'] ?? '-'),
-
-                    subtitle: Text("Kode: ${item['kode_tindak_lanjut']}"),
-
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // ✏️ EDIT
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () {
-                            showEditDialog(item);
-                          },
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Rencana Tindak Lanjut",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                         ),
-
-                        // 🗑️ DELETE
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            confirmDelete(item['kode_tindak_lanjut']);
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 4),
+                    ],
                   ),
-                );
-              },
+                ),
+
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: tindakLanjutList.length,
+                    itemBuilder: (context, index) {
+                      final item = tindakLanjutList[index];
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: ListTile(
+                          leading: const Icon(Icons.assignment),
+
+                          title: Text(item['nama_tindak_lanjut'] ?? '-'),
+
+                          subtitle: Text("Kode: ${item['kode_tindak_lanjut']}"),
+
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  showEditDialog(item);
+                                },
+                              ),
+
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () {
+                                  confirmDelete(item['kode_tindak_lanjut']);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: showTambahDialog,

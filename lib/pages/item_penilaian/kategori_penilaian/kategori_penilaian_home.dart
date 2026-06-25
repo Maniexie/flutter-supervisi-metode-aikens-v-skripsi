@@ -218,35 +218,49 @@ class _KategoriPenilaianHomePageState extends State<KategoriPenilaianHomePage> {
                 ],
               ),
             )
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: kategoriList.length,
-              itemBuilder: (context, index) {
-                final item = kategoriList[index];
-
-                return Card(
-                  child: ListTile(
-                    title: Text(
-                      item.namaKategoriPenilaian,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(item.kodeKategoriPenilaian),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min, // ✅ FIX OVERFLOW
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => editKategori(item),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => hapusKategori(item),
-                        ),
-                      ],
-                    ),
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    "Kategori Penilaian",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                );
-              },
+                ),
+
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    itemCount: kategoriList.length,
+                    itemBuilder: (context, index) {
+                      final item = kategoriList[index];
+
+                      return Card(
+                        child: ListTile(
+                          title: Text(item.namaKategoriPenilaian),
+                          subtitle: Text(item.kodeKategoriPenilaian),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                onPressed: () => editKategori(item),
+                                icon: const Icon(Icons.edit),
+                                color: Colors.blue,
+                              ),
+                              IconButton(
+                                onPressed: () => hapusKategori(item),
+                                icon: const Icon(Icons.delete),
+                                color: Colors.red,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
 
       floatingActionButton: FloatingActionButton(

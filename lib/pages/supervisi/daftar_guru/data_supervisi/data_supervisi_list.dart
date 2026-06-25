@@ -40,7 +40,7 @@ class _DataSupervisiListPageState extends State<DataSupervisiListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Riwayat Supervisi")),
+      appBar: AppBar(title: const Text("Riwayat Observasi Kelas")),
 
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -52,7 +52,7 @@ class _DataSupervisiListPageState extends State<DataSupervisiListPage> {
                   Icon(Icons.assignment, size: 50, color: Colors.grey),
                   SizedBox(height: 10),
                   Text(
-                    "Belum Ada Daftar Riwayat Supervisi atau Data Supervisi Kosong",
+                    "Belum Ada Daftar Riwayat Observasi Kelas atau Data Observasi Kelas Kosong",
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],

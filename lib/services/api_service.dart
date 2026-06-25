@@ -74,6 +74,11 @@ class ApiLoginService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('role');
   }
+
+  static Future<String?> getNama() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nama');
+  }
 }
 
 class ApiLogoutService {
@@ -647,6 +652,7 @@ class JawabanValidatorService {
 class ApiSupervisiService {
   Future<Map<String, dynamic>> submitSupervisi({
     required int idGuru,
+    required String namaGuru,
     required int idJadwal,
     required Map<int, int> jawaban,
   }) async {
@@ -659,6 +665,7 @@ class ApiSupervisiService {
       },
       body: jsonEncode({
         "id_guru": idGuru,
+        "nama_guru": namaGuru,
         "id_jadwal_supervisi": idJadwal,
         "jawaban": jawaban.entries.map((e) {
           return {"id_item": e.key, "nilai": e.value};

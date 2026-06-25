@@ -120,11 +120,7 @@ class _AikenKuesionerPageState extends State<AikenKuesionerPage> {
         context,
       ).showSnackBar(const SnackBar(content: Text("Berhasil disimpan")));
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const AikenHomePage()),
-        (route) => false,
-      );
+      Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(
         context,

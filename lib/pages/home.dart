@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 // import 'package:fl_chart/fl_chart.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int idUser;
+  final String nama;
 
+  const HomePage({super.key, required this.idUser, required this.nama});
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -11,7 +13,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("Home")));
+    return Scaffold(
+      body: Center(child: Text("Selamat Datang, ${widget.nama}")),
+    );
   }
 }
 
