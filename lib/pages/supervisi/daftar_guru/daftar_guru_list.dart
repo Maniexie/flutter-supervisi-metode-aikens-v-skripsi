@@ -140,18 +140,24 @@ class _DaftarGuruListPageState extends State<DaftarGuruListPage> {
 
                       /// 🔥 ROLE
                       DropdownButtonFormField<String>(
-                        value: getRoleLabel(role),
-                        items: ["guru", "operator", "kepala_sekolah"]
-                            .map(
-                              (e) => DropdownMenuItem(value: e, child: Text(e)),
-                            )
-                            .toList(),
+                        value: role,
+                        decoration: const InputDecoration(labelText: "Role"),
+                        items: const [
+                          DropdownMenuItem(value: "guru", child: Text("Guru")),
+                          DropdownMenuItem(
+                            value: "operator",
+                            child: Text("Operator"),
+                          ),
+                          DropdownMenuItem(
+                            value: "kepala_sekolah",
+                            child: Text("Kepala Sekolah"),
+                          ),
+                        ],
                         onChanged: (value) {
                           setStateDialog(() {
                             role = value!;
                           });
                         },
-                        decoration: const InputDecoration(labelText: "Role"),
                       ),
 
                       /// 🔥 JENIS KELAMIN

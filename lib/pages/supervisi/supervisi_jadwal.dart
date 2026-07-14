@@ -55,7 +55,7 @@ class _SupervisiJadwalPageState extends State<SupervisiJadwalPage> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text("Tambah Jadwal Supervisi"),
+              title: const Text("Tambah Jadwal Observasi Kelas"),
               content: SingleChildScrollView(
                 child: Column(
                   children: [

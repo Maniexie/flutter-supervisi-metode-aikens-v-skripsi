@@ -67,7 +67,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       titles = [
         "Home",
-        "Supervisi",
+        "Observasi Kelas",
         "Item Penilaian",
         if (isValidator) "Aiken",
         "Profile",
@@ -81,7 +81,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         const NavigationDestination(
           icon: Icon(Icons.assignment_add),
-          label: 'Supervisi',
+          label: 'Observasi',
         ),
         const NavigationDestination(icon: Icon(Icons.message), label: 'Item'),
         if (isValidator)
@@ -101,7 +101,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       titles = [
         "Dashboard",
-        "Supervisi Guru",
+        "Observasi Guru",
         if (isValidator) "Aiken",
         "Profile",
       ];
@@ -110,7 +110,7 @@ class _DashboardPageState extends State<DashboardPage> {
         const NavigationDestination(icon: Icon(Icons.home), label: 'Dashboard'),
         const NavigationDestination(
           icon: Icon(Icons.assignment_add),
-          label: 'Supervisi Guru',
+          label: 'Observasi Guru',
         ),
         if (isValidator)
           const NavigationDestination(
@@ -130,7 +130,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       titles = [
         "Home",
-        "Supervisi",
+        "Observasi Kelas",
         "Item Penilaian",
         if (isValidator) "Aiken",
         "Profile",
@@ -144,7 +144,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         const NavigationDestination(
           icon: Icon(Icons.assignment_add),
-          label: 'Supervisi',
+          label: 'Observasi',
         ),
         const NavigationDestination(icon: Icon(Icons.message), label: 'Item'),
         if (isValidator)

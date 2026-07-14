@@ -14,7 +14,7 @@ class _DetailDaftarTindakLanjutSupervisiPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Detail Daftar Tindak Lanjut Supervisi"),
+        title: const Text("Detail Daftar Tindak Lanjut observasi kelas"),
       ),
     );
   }

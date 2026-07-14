@@ -168,7 +168,7 @@ class ApiGuruService {
       return json['data'];
     } else {
       print(res.statusCode);
-      throw Exception("Gagal load supervisi");
+      throw Exception("Gagal load observasi kelas");
     }
   }
 

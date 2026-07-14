@@ -43,7 +43,7 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text("Tambah Jadwal Supervisi"),
+              title: const Text("Tambah Jadwal Observasi Kelas"),
               content: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -157,7 +157,7 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Supervisi Home"),
+        title: Text(""),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.push(
@@ -188,7 +188,7 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
           Card(
             child: ListTile(
               leading: Icon(Icons.assignment),
-              title: Text("Daftar Jadwal Supervisi"),
+              title: Text("Daftar Jadwal Observasi Kelas"),
               onTap: () {
                 Navigator.push(
                   context,
@@ -202,7 +202,7 @@ class _SupervisiHomePageState extends State<SupervisiHomePage> {
           Card(
             child: ListTile(
               leading: Icon(Icons.assignment_turned_in),
-              title: Text("Daftar Tindak Lanjut Supervisi"),
+              title: Text("Daftar Tindak Lanjut Observasi Kelas"),
               onTap: () {
                 Navigator.push(
                   context,

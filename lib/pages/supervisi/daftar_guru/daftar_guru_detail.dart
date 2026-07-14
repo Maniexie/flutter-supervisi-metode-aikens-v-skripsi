@@ -320,7 +320,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
               child: isLoadingChart
                   ? const Center(child: CircularProgressIndicator())
                   : chartData.isEmpty
-                  ? const Center(child: Text("Belum ada data supervisi"))
+                  ? const Center(child: Text("Belum ada data observasi kelas"))
                   : LineChart(
                       LineChartData(
                         minY: 0,
@@ -404,7 +404,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
               child: ListTile(
                 leading: const Icon(Icons.download, color: Colors.green),
                 title: const Text("Download Data Observasi Kelas"),
-                subtitle: const Text("Export ke PDF / Excel"),
+                // subtitle: const Text(""),
                 trailing: const Icon(Icons.arrow_downward),
                 onTap: () {
                   downloadDataPdf(); // 🔥 panggil function

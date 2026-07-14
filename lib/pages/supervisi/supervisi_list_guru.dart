@@ -107,9 +107,9 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
     }
 
     if (sudah) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Guru sudah disupervisi")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Guru sudah observasi kelas")),
+      );
 
       return;
     }
@@ -144,7 +144,7 @@ class _SupervisiListGuruPageState extends State<SupervisiListGuruPage> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text("Edit Jadwal Supervisi"),
+              title: const Text("Edit Jadwal Observasi Kelas"),
               content: SingleChildScrollView(
                 child: Column(
                   children: [

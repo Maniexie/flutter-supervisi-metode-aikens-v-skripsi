@@ -6,9 +6,9 @@ class SupervisiIntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Supervisi")),
+      appBar: AppBar(title: Text("Observasi Kelas")),
       body: Center(
-        child: Column(children: [Text("Selamat Datang di Supervisi")]),
+        child: Column(children: [Text("Selamat Datang di Observasi Kelas")]),
       ),
     );
   }

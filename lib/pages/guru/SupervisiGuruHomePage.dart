@@ -242,7 +242,7 @@ class _SupervisiGuruHomePageState extends State<SupervisiGuruHomePage> {
 
                   detailRow(
                     Icons.star,
-                    "Nilai Supervisi",
+                    "Nilai Observasi",
                     item['nilai'].toString(),
                   ),
 
@@ -375,7 +375,7 @@ class _SupervisiGuruHomePageState extends State<SupervisiGuruHomePage> {
               children: [
                 Expanded(
                   child: dashboardCard(
-                    "Total Supervisi",
+                    "Total Observasi",
                     "${jadwalList.length}",
                     Icons.assignment,
                     Colors.orange,
@@ -409,7 +409,7 @@ class _SupervisiGuruHomePageState extends State<SupervisiGuruHomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Grafik Supervisi",
+                        "Grafik Observasi",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

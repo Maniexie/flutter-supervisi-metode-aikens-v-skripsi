@@ -126,7 +126,7 @@ class _SupervisiKuesionerPageState extends State<SupervisiKuesionerPage> {
           }
 
           if (supervisiItems.isEmpty) {
-            return const Center(child: Text("Tidak ada data supervisi"));
+            return const Center(child: Text("Tidak ada data observasi kelas"));
           }
           final grouped = groupByKategori();
           return Column(

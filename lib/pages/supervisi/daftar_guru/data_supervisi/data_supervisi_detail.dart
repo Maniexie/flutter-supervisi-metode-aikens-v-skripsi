@@ -62,7 +62,7 @@ class _DataSupervisiDetailPageState extends State<DataSupervisiDetailPage> {
     // double nilaiAkhir = double.tryParse(item['nilai_akhir'].toString()) ?? 0;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Detail Supervisi")),
+      appBar: AppBar(title: const Text("Detail observasi kelas")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

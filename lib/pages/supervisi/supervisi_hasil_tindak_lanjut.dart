@@ -84,29 +84,79 @@ class _SupervisiHasilTindakLanjutPageState
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Nama ${widget.namaGuru}",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  const Center(
+                    child: Text(
+                      "HASIL OBSERVASI KELAS",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  Text(
-                    " Total Nilai : ${widget.totalNilai * 20}",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 120,
+                        child: Text(
+                          "Nama Guru",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const Text(": ", style: TextStyle(color: Colors.white)),
+                      Expanded(
+                        child: Text(
+                          widget.namaGuru,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 120,
+                        child: Text(
+                          "Nilai Akhir",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const Text(": ", style: TextStyle(color: Colors.white)),
+                      Expanded(
+                        child: Text(
+                          "${(widget.totalNilai * 20).toStringAsFixed(2)}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
 
+            // 🔵 TINDAK LANJUT
             // 🔥 DROPDOWN
             isLoadingTindakLanjut
                 ? const CircularProgressIndicator()
@@ -128,9 +178,7 @@ class _SupervisiHasilTindakLanjutPageState
                       });
                     },
                   ),
-
             const SizedBox(height: 20),
-
             // 🔥 SIMPAN
             ElevatedButton(
               onPressed: selectedTindakLanjut == null
