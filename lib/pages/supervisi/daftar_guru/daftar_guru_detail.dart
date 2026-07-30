@@ -305,6 +305,7 @@ class _DaftarGuruDetailPageState extends State<DaftarGuruDetailPage> {
                     MaterialPageRoute(
                       builder: (_) => DataSupervisiListPage(
                         guruId: widget.guru.id, // 🔥 kirim ID
+                        namaGuru: widget.guru.nama!,
                       ),
                     ),
                   );

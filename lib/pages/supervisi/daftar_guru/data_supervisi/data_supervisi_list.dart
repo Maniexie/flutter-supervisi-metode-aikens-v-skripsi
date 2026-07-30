@@ -4,8 +4,13 @@ import 'package:supervisi/services/api_service.dart';
 
 class DataSupervisiListPage extends StatefulWidget {
   final int guruId;
+  final String namaGuru;
 
-  const DataSupervisiListPage({super.key, required this.guruId});
+  const DataSupervisiListPage({
+    super.key,
+    required this.guruId,
+    required this.namaGuru,
+  });
 
   @override
   State<DataSupervisiListPage> createState() => _DataSupervisiListPageState();
@@ -81,6 +86,7 @@ class _DataSupervisiListPageState extends State<DataSupervisiListPage> {
                           builder: (_) => DataSupervisiDetailPage(
                             item: item,
                             guruId: widget.guruId, // ✅ TAMBAHKAN INI
+                            namaGuru: widget.namaGuru,
                           ),
                         ),
                       );
